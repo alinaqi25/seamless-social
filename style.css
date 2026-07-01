@@ -695,9 +695,10 @@ main { display: block; }
   .option-grid { grid-template-columns: 1fr; }
   .god-ray { width: 85vw; }
 }
+/* ==========================================================================
+   SLIDER LAYOUT MECHANICS (OVERHAULED)
+   ========================================================================== */
 
-
-/* Slider Layout Basics */
 .slider-wrapper {
   overflow: hidden;
   width: 100%;
@@ -705,23 +706,32 @@ main { display: block; }
   cursor: grab;
   margin-bottom: 4rem;
   padding: 20px 0;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.slider-wrapper:active { cursor: grabbing; }
+
+.slider-wrapper.is-dragging {
+  cursor: grabbing;
+}
 
 .slider-track {
   display: flex;
   gap: 24px;
+  width: max-content;
   will-change: transform;
-  transition: transform 0.3s ease-out;
+  transform: translateZ(0); /* Forces GPU Hardware Layer Allocation */
 }
 
-/* Video Card Styles (Exactly 2 items on Desktop) */
+/* Video Card Configuration (2 complete slots visible on desktop screens) */
 .video-card {
-  flex: 0 0 calc(50% - 12px); /* Scales perfectly into 2 slots on desktop screen */
-  min-width: 300px;
+  flex: 0 0 540px; 
+  max-width: 85vw;
 }
+
 @media (max-width: 768px) {
-  .video-card { flex: 0 0 100%; } /* Single item on mobile */
+  .video-card { 
+    flex: 0 0 320px; /* Perfectly sized mobile viewport constraints */
+  } 
 }
 
 .video-thumb-container {
@@ -731,19 +741,24 @@ main { display: block; }
   border-radius: var(--radius-md);
   overflow: hidden;
 }
+
 .video-thumb-container img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none; /* Prevents default browser image ghost drag artifacts */
 }
 
-/* Text Testimonial Card Styles */
+/* Text Testimonial Styling Rules */
 .text-card {
-  flex: 0 0 400px;
-  max-width: 100%;
+  flex: 0 0 420px;
+  max-width: 85vw;
 }
+
 @media (max-width: 480px) {
-  .text-card { flex: 0 0 290px; }
+  .text-card { 
+    flex: 0 0 290px; 
+  }
 }
 
 .text-card__stars {
@@ -751,16 +766,19 @@ main { display: block; }
   margin-bottom: 0.8rem;
   font-size: 1.2rem;
 }
+
 .text-card__header {
   display: flex;
   align-items: center;
   gap: 16px;
   margin-top: 1.5rem;
 }
+
 .text-card__logo {
   width: 44px;
   height: 44px;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--glass-border);
+  pointer-events: none;
 }

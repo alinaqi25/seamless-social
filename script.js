@@ -251,18 +251,16 @@ document.addEventListener("DOMContentLoaded", () => {
     yearEl.textContent = new Date().getFullYear();
   }
 });
-
-/* ============================================================
-   10. DATOCMS INTEGRATION & INFINITE DRAG SLIDERS
-   ============================================================ */
+/* ==========================================================================
+   10. DATOCMS INTEGRATION & LUXURY INFINITE DRAG SLIDERS (OVERHAULED)
+   ========================================================================== */
 
 const DATOCMS_READ_ONLY_TOKEN = "f4b3b8c10c8dc8ad68ef3f352cece6";
 
 // Utility function to extract YouTube IDs cleanly
 function getYouTubeId(url) {
   if (!url) return "dQw4w9WgXcQ"; 
-  const regExp =
-    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\/\?v=|\&v=)([^#\&\?]*).*/;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\/\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   return match && match[2].length === 11 ? match[2] : "dQw4w9WgXcQ";
 }
@@ -330,10 +328,7 @@ async function initTestimonials() {
     const { data, errors } = await response.json();
 
     if (errors) {
-      console.error(
-        "❌ DatoCMS GraphQL Error Details:\n", 
-        errors.map(e => e.message).join("\n\n")
-      );
+      console.error("❌ DatoCMS GraphQL Error Details:\n", errors.map(e => e.message).join("\n\n"));
       renderTestimonialFallbacks();
       return;
     }
@@ -356,17 +351,17 @@ function renderVideoSlider(videos) {
   const track = document.getElementById("videoSliderTrack");
   if (!track || !videos || !videos.length) return;
 
-  const items = [...videos, ...videos];
+  // Triplicate or duplicate to guarantee smooth infinite fill across ultra-wide viewports
+  const items = [...videos, ...videos, ...videos];
 
   track.innerHTML = items
     .map((vid) => {
       const videoId = getYouTubeId(vid.youtubeLink);
-      // Changed from maxresdefault to hqdefault to eliminate YouTube 404 image errors completely
       const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
       return `
             <div class="glass-card video-card">
                 <div class="video-thumb-container" onclick="handleVideoPlay(this, '${videoId}')">
-                    <img src="${thumbUrl}" alt="${vid.title || 'Video testimonial'}">
+                    <img src="${thumbUrl}" alt="${vid.title || 'Video testimonial'}" draggable="false">
                     <button class="play-btn" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%)" aria-label="Play video">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7-11-7z" fill="currentColor"/></svg>
                     </button>
@@ -392,7 +387,7 @@ function renderTextSlider(testimonials) {
   const track = document.getElementById("textSliderTrack");
   if (!track || !testimonials || !testimonials.length) return;
 
-  const items = [...testimonials, ...testimonials];
+  const items = [...testimonials, ...testimonials, ...testimonials];
 
   track.innerHTML = items
     .map((t) => {
@@ -405,7 +400,7 @@ function renderTextSlider(testimonials) {
                 <div class="text-card__stars">${stars}</div>
                 <p class="testimonial-card__quote">"${t.reviewText || ''}"</p>
                 <div class="text-card__header">
-                    <img class="text-card__logo" src="${logoUrl}" alt="${t.companyName || 'Client'}">
+                    <img class="text-card__logo" src="${logoUrl}" alt="${t.companyName || 'Client'}" draggable="false">
                     <div>
                         <h4 style="margin:0; font-size:1rem;">${t.companyName || 'Verified Founder'}</h4>
                         <span class="testimonial-card__author" style="margin:0;">Partner Brand</span>
@@ -422,61 +417,94 @@ function renderTextSlider(testimonials) {
 function setupSliderDragging(wrapper, track) {
   if (!wrapper || !track) return;
 
+  let currentX = 0;
   let isDragging = false;
-  let startX, scrollLeft;
+  let isHovered = false;
+  let startX = 0;
+  let dragStartTranslate = 0;
+  let totalDragDistance = 0;
+  
+  // Luxury auto-scroll speed (pixels per frame)
+  const autoScrollSpeed = 0.5; 
 
-  wrapper.addEventListener("mousedown", (e) => {
+  // Direct script configuration to bypass any CSS transitions entirely
+  track.style.transition = "none";
+
+  function update() {
+    if (!isDragging && !isHovered) {
+      currentX -= autoScrollSpeed;
+      
+      // Since elements are perfectly cloned, split width down into 3 clean sets
+      const setWidth = track.scrollWidth / 3;
+      if (Math.abs(currentX) >= setWidth) {
+        currentX = 0; // Seamless snap-back
+      }
+      track.style.transform = `translateX(${currentX}px) translateZ(0)`;
+    }
+    requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+
+  // Mouse Down / Touch Start
+  const startInteraction = (clientX) => {
     isDragging = true;
-    wrapper.classList.add("active");
-    startX = e.pageX - track.offsetLeft;
-    scrollLeft = track.style.transform
-      ? parseInt(
-          track.style.transform.replace("translateX(", "").replace("px)", ""),
-        ) || 0
-      : 0;
-  });
+    wrapper.classList.add("is-dragging");
+    startX = clientX;
+    dragStartTranslate = currentX;
+    totalDragDistance = 0;
+  };
 
-  window.addEventListener("mouseup", () => {
+  // Mouse Move / Touch Move
+  const moveInteraction = (clientX) => {
+    if (!isDragging) return;
+    const deltaX = clientX - startX;
+    totalDragDistance = Math.abs(deltaX);
+    currentX = dragStartTranslate + deltaX;
+
+    const setWidth = track.scrollWidth / 3;
+    
+    // Bounds wrapping logic inside drag state to prevent empty spaces
+    if (currentX > 0) {
+      currentX -= setWidth;
+      dragStartTranslate -= setWidth;
+    } else if (Math.abs(currentX) >= setWidth) {
+      currentX += setWidth;
+      dragStartTranslate += setWidth;
+    }
+
+    track.style.transform = `translateX(${currentX}px) translateZ(0)`;
+  };
+
+  // End Interaction
+  const endInteraction = () => {
+    if (!isDragging) return;
     isDragging = false;
-    if (wrapper) wrapper.classList.remove("active");
+    wrapper.classList.remove("is-dragging");
+  };
+
+  // Mouse Listeners
+  wrapper.addEventListener("mousedown", (e) => startInteraction(e.clientX));
+  window.addEventListener("mousemove", (e) => moveInteraction(e.clientX));
+  window.addEventListener("mouseup", endInteraction);
+
+  // Touch Listeners
+  wrapper.addEventListener("touchstart", (e) => startInteraction(e.touches[0].clientX), { passive: true });
+  wrapper.addEventListener("touchmove", (e) => moveInteraction(e.touches[0].clientX), { passive: true });
+  wrapper.addEventListener("touchend", endInteraction);
+
+  // Auto-scroll pause mechanics when cursor targets elements
+  wrapper.addEventListener("mouseenter", () => isHovered = true);
+  wrapper.addEventListener("mouseleave", () => {
+    isHovered = false;
+    isDragging = false; 
+    wrapper.classList.remove("is-dragging");
   });
 
-  wrapper.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - track.offsetLeft;
-    const walk = (x - startX) * 1.5; 
-    let targetX = scrollLeft + walk;
-
-    const halfWidth = track.scrollWidth / 2;
-    if (Math.abs(targetX) >= halfWidth) targetX = 0;
-    if (targetX > 0) targetX = -halfWidth;
-
-    track.style.transform = `translateX(${targetX}px)`;
-  });
-
-  wrapper.addEventListener("touchstart", (e) => {
-    isDragging = true;
-    startX = e.touches[0].pageX - track.offsetLeft;
-    scrollLeft = track.style.transform
-      ? parseInt(
-          track.style.transform.replace("translateX(", "").replace("px)", ""),
-        ) || 0
-      : 0;
-  });
-
-  wrapper.addEventListener("touchend", () => (isDragging = false));
-
-  wrapper.addEventListener("touchmove", (e) => {
-    if (!isDragging) return;
-    const x = e.touches[0].pageX - track.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    let targetX = scrollLeft + walk;
-
-    const halfWidth = track.scrollWidth / 2;
-    if (Math.abs(targetX) >= halfWidth) targetX = 0;
-    if (targetX > 0) targetX = -halfWidth;
-
-    track.style.transform = `translateX(${targetX}px)`;
-  });
+  // CRITICAL FIX: Intercepts and completely destroys click events if the user was dragging
+  wrapper.addEventListener("click", (e) => {
+    if (totalDragDistance > 8) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true); // Capturing phase execution preserves structure and kills downstream functions
 }
