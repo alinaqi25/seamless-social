@@ -2,17 +2,6 @@
    SEAMLESS SOCIAL — script.js
    ========================================================================== */
 
-/* ============================================================
-     1. GLOBAL ASSET ERROR HANDLER (Moved to top to prevent race conditions)
-     ============================================================ */
-window.handleAssetError = function (img) {
-  const slot = img.closest(".asset-slot");
-  if (slot) {
-    slot.classList.add("asset-slot--empty");
-    img.style.display = "none";
-  }
-};
-
 document.addEventListener("DOMContentLoaded", () => {
   /* ============================================================
        2. COSMIC BACKGROUND CANVAS (Stardust)
@@ -214,23 +203,19 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      // 1. Capture text fields from the final step to prefill Calendly
       const clientName = document.getElementById("fieldName").value.trim();
-      const clientContact = document
-        .getElementById("fieldContact")
-        .value.trim();
+      const clientContact = document.getElementById("fieldContact").value.trim();
 
       const revenue = formData["revenue"];
       const spend = formData["spend"];
       const timeline = formData["timeline"];
 
+      // ADJUST CONDITIONALS HERE IF YOU WANT TO LOOSEN FILTERS DURING TESTING
       const isRevenueQualified = revenue !== "under40";
       const isSpendQualified = spend !== "under500";
-      const isTimelineQualified =
-        timeline === "thisweek" || timeline === "thismonth";
+      const isTimelineQualified = timeline === "thisweek" || timeline === "thismonth";
 
-      const isQualified =
-        isRevenueQualified && isSpendQualified && isTimelineQualified;
+      const isQualified = isRevenueQualified && isSpendQualified && isTimelineQualified;
 
       form.hidden = true;
       document.getElementById("formProgress").hidden = true;
@@ -240,6 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("resultQualified").hidden = false;
 
         const CALENDLY_LINK = "https://calendly.com/seamlesssocial2/30min";
+        
         if (window.Calendly) {
           window.Calendly.initInlineWidget({
             url: CALENDLY_LINK,
@@ -248,15 +234,27 @@ document.addEventListener("DOMContentLoaded", () => {
               name: clientName,
               email: clientContact.includes("@") ? clientContact : "",
             },
-            // Custom color configurations to match your CSS variables
             pageSettings: {
-              backgroundColor: "010209", // Matches var(--midnight)
+              backgroundColor: "010209", 
               hideTextColor: false,
-              textLinkColor: "7C8CFF", // Matches var(--periwinkle)
-              textColor: "F5F7FF", // Matches var(--text-primary)
+              textLinkColor: "7C8CFF", 
+              textColor: "F5F7FF", 
             },
             utm: {},
           });
+        } else {
+          // Robust fallback UI if Calendly script is blocked by browser privacy tools
+          const widgetContainer = document.getElementById("calendly-inline-widget");
+          if (widgetContainer) {
+            widgetContainer.innerHTML = `
+              <div style="padding: 2rem; text-align: center; border: 1px dashed var(--glass-border); border-radius: var(--radius-md); margin-top: 1.5rem; background: rgba(255,255,255,0.01);">
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">An ad-blocker or privacy setting is blocking our calendar widget.</p>
+                <a href="${CALENDLY_LINK}" target="_blank" rel="noopener" class="btn btn--primary">
+                  Click here to book your call directly &rarr;
+                </a>
+              </div>
+            `;
+          }
         }
       } else {
         document.getElementById("resultTeardown").hidden = false;
