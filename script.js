@@ -115,12 +115,13 @@ document.addEventListener("DOMContentLoaded", () => {
   revealElements.forEach((el) => revealObserver.observe(el));
 
   /* ============================================================
-       5. INFINITE LOGO MARQUEE
+       5. INFINITE LOGO MARQUEE (Fallback Setup)
        ============================================================ */
   const marqueeTrack = document.querySelector(".logos__track");
   if (marqueeTrack) {
-    const trackContent = marqueeTrack.innerHTML;
-    marqueeTrack.innerHTML += trackContent;
+    const initialContent = marqueeTrack.innerHTML;
+    marqueeTrack.innerHTML = initialContent + initialContent + initialContent;
+    marqueeTrack.innerHTML += marqueeTrack.innerHTML;
   }
 
   /* ============================================================
@@ -279,6 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
     yearEl.textContent = new Date().getFullYear();
   }
 });
+
 /* ==========================================================================
    10. DATOCMS INTEGRATION & LUXURY INFINITE DRAG SLIDERS (OVERHAULED)
    ========================================================================== */
@@ -351,6 +353,12 @@ async function initTestimonials() {
           url
         }
       }
+      allLogoStrips {
+        logoImage {
+          url
+          alt
+        }
+      }
     }`;
 
   try {
@@ -375,7 +383,7 @@ async function initTestimonials() {
       return;
     }
 
-    if (!data || !data.allVideoTestimonials || !data.allTextTestimonials) {
+    if (!data || !data.allVideoTestimonials || !data.allTextTestimonials || !data.allLogoStrips) {
       console.error(
         "DatoCMS Fetch Error: no data or incomplete structure returned from API",
       );
@@ -385,6 +393,7 @@ async function initTestimonials() {
 
     renderVideoSlider(data.allVideoTestimonials);
     renderTextSlider(data.allTextTestimonials);
+    renderLogoMarquee(data.allLogoStrips);
   } catch (err) {
     console.error("DatoCMS Network Fetch Error:", err);
     renderTestimonialFallbacks();
@@ -458,6 +467,31 @@ function renderTextSlider(testimonials) {
     .join("");
 
   setupSliderDragging(document.querySelector(".text-slider-wrapper"), track);
+}
+
+function renderLogoMarquee(logoStrips) {
+  const track = document.querySelector(".logos__track");
+  if (!track || !logoStrips || !logoStrips.length) return;
+
+  let extendedLogos = [...logoStrips];
+  while (extendedLogos.length < 15) {
+    extendedLogos = extendedLogos.concat(logoStrips);
+  }
+
+  track.innerHTML = extendedLogos
+    .map((logoStrip) => {
+      const url = logoStrip.logoImage?.url || "";
+      const alt = logoStrip.logoImage?.alt || "Client logo";
+      return `
+        <span class="asset-slot asset-slot--logo-strip" data-label="LOGO">
+          <img src="${url}" alt="${alt}" onerror="handleAssetError(this)" />
+        </span>
+      `;
+    })
+    .join("");
+
+  const trackContent = track.innerHTML;
+  track.innerHTML += trackContent;
 }
 
 function setupSliderDragging(wrapper, track) {

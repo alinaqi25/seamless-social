@@ -371,7 +371,7 @@ svg {
 .asset-slot--wordmark-hero {
   height: auto;
   width: clamp(280px, 60vw, 720px);
-  margin: 3.5rem auto 5.5rem;
+  margin: 5.5rem auto 7.5rem;
   background: transparent;
   display: block;
   filter: drop-shadow(0 0 50px rgba(27, 76, 242, 0.45))
@@ -402,9 +402,10 @@ svg {
   height: 52px;
   border-radius: var(--radius-sm);
   margin: 0 24px;
+  filter: grayscale(0.9);
   flex-shrink: 0;
-  filter: grayscale(1) opacity(0.3);
   transition: filter var(--dur-med) var(--ease);
+  background: transparent;
 }
 .asset-slot--logo-strip:hover {
   filter: grayscale(0) opacity(0.7);
@@ -763,6 +764,8 @@ main {
 .logos {
   padding: 2rem 24px 5rem;
   text-align: center;
+  background: var(--midnight);
+
 }
 .logos__label {
   font-size: 0.85rem;
