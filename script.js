@@ -214,6 +214,12 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
+      // 1. Capture text fields from the final step to prefill Calendly
+      const clientName = document.getElementById("fieldName").value.trim();
+      const clientContact = document
+        .getElementById("fieldContact")
+        .value.trim();
+
       const revenue = formData["revenue"];
       const spend = formData["spend"];
       const timeline = formData["timeline"];
@@ -232,6 +238,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isQualified) {
         document.getElementById("resultQualified").hidden = false;
+
+        const CALENDLY_LINK = "https://calendly.com/seamlesssocial2/30min";
+        if (window.Calendly) {
+          window.Calendly.initInlineWidget({
+            url: CALENDLY_LINK,
+            parentElement: document.getElementById("calendly-inline-widget"),
+            prefill: {
+              name: clientName,
+              email: clientContact.includes("@") ? clientContact : "",
+            },
+            // Custom color configurations to match your CSS variables
+            pageSettings: {
+              backgroundColor: "010209", // Matches var(--midnight)
+              hideTextColor: false,
+              textLinkColor: "7C8CFF", // Matches var(--periwinkle)
+              textColor: "F5F7FF", // Matches var(--text-primary)
+            },
+            utm: {},
+          });
+        }
       } else {
         document.getElementById("resultTeardown").hidden = false;
       }
@@ -259,8 +285,9 @@ const DATOCMS_READ_ONLY_TOKEN = "f4b3b8c10c8dc8ad68ef3f352cece6";
 
 // Utility function to extract YouTube IDs cleanly
 function getYouTubeId(url) {
-  if (!url) return "dQw4w9WgXcQ"; 
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\/\?v=|\&v=)([^#\&\?]*).*/;
+  if (!url) return "dQw4w9WgXcQ";
+  const regExp =
+    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\/\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   return match && match[2].length === 11 ? match[2] : "dQw4w9WgXcQ";
 }
@@ -272,8 +299,14 @@ function renderTestimonialFallbacks() {
 
   if (videoTrack && videoTrack.children.length === 0) {
     const fallbackVideos = [
-      { youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Client Video Review" },
-      { youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Brand Growth Story" }
+      {
+        youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        title: "Client Video Review",
+      },
+      {
+        youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        title: "Brand Growth Story",
+      },
     ];
     renderVideoSlider(fallbackVideos);
   }
@@ -282,16 +315,22 @@ function renderTestimonialFallbacks() {
     const fallbackTexts = [
       {
         companyName: "Zenith Threads",
-        reviewText: "The creative pipeline completely solved our fatigue issues. We scaled our Meta spend by 40% without drops in ROAS.",
+        reviewText:
+          "The creative pipeline completely solved our fatigue issues. We scaled our Meta spend by 40% without drops in ROAS.",
         rating: 5,
-        logo: { url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop" }
+        logo: {
+          url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop",
+        },
       },
       {
         companyName: "GlowKit",
-        reviewText: "Working directly with the founders made a massive difference. No overhead, just pure performance creative that converts.",
+        reviewText:
+          "Working directly with the founders made a massive difference. No overhead, just pure performance creative that converts.",
         rating: 5,
-        logo: { url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop" }
-      }
+        logo: {
+          url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop",
+        },
+      },
     ];
     renderTextSlider(fallbackTexts);
   }
@@ -328,13 +367,18 @@ async function initTestimonials() {
     const { data, errors } = await response.json();
 
     if (errors) {
-      console.error("❌ DatoCMS GraphQL Error Details:\n", errors.map(e => e.message).join("\n\n"));
+      console.error(
+        "❌ DatoCMS GraphQL Error Details:\n",
+        errors.map((e) => e.message).join("\n\n"),
+      );
       renderTestimonialFallbacks();
       return;
     }
 
     if (!data || !data.allVideoTestimonials || !data.allTextTestimonials) {
-      console.error("DatoCMS Fetch Error: no data or incomplete structure returned from API");
+      console.error(
+        "DatoCMS Fetch Error: no data or incomplete structure returned from API",
+      );
       renderTestimonialFallbacks();
       return;
     }
@@ -361,7 +405,7 @@ function renderVideoSlider(videos) {
       return `
             <div class="glass-card video-card">
                 <div class="video-thumb-container" onclick="handleVideoPlay(this, '${videoId}')">
-                    <img src="${thumbUrl}" alt="${vid.title || 'Video testimonial'}" draggable="false">
+                    <img src="${thumbUrl}" alt="${vid.title || "Video testimonial"}" draggable="false">
                     <button class="play-btn" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%)" aria-label="Play video">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7-11-7z" fill="currentColor"/></svg>
                     </button>
@@ -391,18 +435,21 @@ function renderTextSlider(testimonials) {
 
   track.innerHTML = items
     .map((t) => {
-      const targetRating = typeof t.rating === 'number' ? t.rating : 5;
-      const stars = "★".repeat(targetRating) + "☆".repeat(Math.max(0, 5 - targetRating));
-      const logoUrl = t.logo?.url || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='%231B4CF2'><circle cx='22' cy='22' r='22'/></svg>";
-      
+      const targetRating = typeof t.rating === "number" ? t.rating : 5;
+      const stars =
+        "★".repeat(targetRating) + "☆".repeat(Math.max(0, 5 - targetRating));
+      const logoUrl =
+        t.logo?.url ||
+        "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='%231B4CF2'><circle cx='22' cy='22' r='22'/></svg>";
+
       return `
             <div class="glass-card pad text-card">
                 <div class="text-card__stars">${stars}</div>
-                <p class="testimonial-card__quote">"${t.reviewText || ''}"</p>
+                <p class="testimonial-card__quote">"${t.reviewText || ""}"</p>
                 <div class="text-card__header">
-                    <img class="text-card__logo" src="${logoUrl}" alt="${t.companyName || 'Client'}" draggable="false">
+                    <img class="text-card__logo" src="${logoUrl}" alt="${t.companyName || "Client"}" draggable="false">
                     <div>
-                        <h4 style="margin:0; font-size:1rem;">${t.companyName || 'Verified Founder'}</h4>
+                        <h4 style="margin:0; font-size:1rem;">${t.companyName || "Verified Founder"}</h4>
                         <span class="testimonial-card__author" style="margin:0;">Partner Brand</span>
                     </div>
                 </div>
@@ -423,9 +470,9 @@ function setupSliderDragging(wrapper, track) {
   let startX = 0;
   let dragStartTranslate = 0;
   let totalDragDistance = 0;
-  
+
   // Luxury auto-scroll speed (pixels per frame)
-  const autoScrollSpeed = 0.5; 
+  const autoScrollSpeed = 0.5;
 
   // Direct script configuration to bypass any CSS transitions entirely
   track.style.transition = "none";
@@ -433,7 +480,7 @@ function setupSliderDragging(wrapper, track) {
   function update() {
     if (!isDragging && !isHovered) {
       currentX -= autoScrollSpeed;
-      
+
       // Since elements are perfectly cloned, split width down into 3 clean sets
       const setWidth = track.scrollWidth / 3;
       if (Math.abs(currentX) >= setWidth) {
@@ -462,7 +509,7 @@ function setupSliderDragging(wrapper, track) {
     currentX = dragStartTranslate + deltaX;
 
     const setWidth = track.scrollWidth / 3;
-    
+
     // Bounds wrapping logic inside drag state to prevent empty spaces
     if (currentX > 0) {
       currentX -= setWidth;
@@ -488,23 +535,35 @@ function setupSliderDragging(wrapper, track) {
   window.addEventListener("mouseup", endInteraction);
 
   // Touch Listeners
-  wrapper.addEventListener("touchstart", (e) => startInteraction(e.touches[0].clientX), { passive: true });
-  wrapper.addEventListener("touchmove", (e) => moveInteraction(e.touches[0].clientX), { passive: true });
+  wrapper.addEventListener(
+    "touchstart",
+    (e) => startInteraction(e.touches[0].clientX),
+    { passive: true },
+  );
+  wrapper.addEventListener(
+    "touchmove",
+    (e) => moveInteraction(e.touches[0].clientX),
+    { passive: true },
+  );
   wrapper.addEventListener("touchend", endInteraction);
 
   // Auto-scroll pause mechanics when cursor targets elements
-  wrapper.addEventListener("mouseenter", () => isHovered = true);
+  wrapper.addEventListener("mouseenter", () => (isHovered = true));
   wrapper.addEventListener("mouseleave", () => {
     isHovered = false;
-    isDragging = false; 
+    isDragging = false;
     wrapper.classList.remove("is-dragging");
   });
 
   // CRITICAL FIX: Intercepts and completely destroys click events if the user was dragging
-  wrapper.addEventListener("click", (e) => {
-    if (totalDragDistance > 8) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }, true); // Capturing phase execution preserves structure and kills downstream functions
+  wrapper.addEventListener(
+    "click",
+    (e) => {
+      if (totalDragDistance > 8) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+    true,
+  ); // Capturing phase execution preserves structure and kills downstream functions
 }
