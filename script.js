@@ -2,18 +2,18 @@
    SEAMLESS SOCIAL — script.js
    ========================================================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
-  /* ============================================================
-       1. GLOBAL ASSET ERROR HANDLER
-       ============================================================ */
-  window.handleAssetError = function (img) {
-    const slot = img.closest(".asset-slot");
-    if (slot) {
-      slot.classList.add("asset-slot--empty");
-      img.style.display = "none";
-    }
-  };
+/* ============================================================
+     1. GLOBAL ASSET ERROR HANDLER (Moved to top to prevent race conditions)
+     ============================================================ */
+window.handleAssetError = function (img) {
+  const slot = img.closest(".asset-slot");
+  if (slot) {
+    slot.classList.add("asset-slot--empty");
+    img.style.display = "none";
+  }
+};
 
+document.addEventListener("DOMContentLoaded", () => {
   /* ============================================================
        2. COSMIC BACKGROUND CANVAS (Stardust)
        ============================================================ */
@@ -361,7 +361,8 @@ function renderVideoSlider(videos) {
   track.innerHTML = items
     .map((vid) => {
       const videoId = getYouTubeId(vid.youtubeLink);
-      const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      // Changed from maxresdefault to hqdefault to eliminate YouTube 404 image errors completely
+      const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
       return `
             <div class="glass-card video-card">
                 <div class="video-thumb-container" onclick="handleVideoPlay(this, '${videoId}')">
@@ -381,7 +382,7 @@ function renderVideoSlider(videos) {
 window.handleVideoPlay = function (container, videoId) {
   container.innerHTML = `
         <iframe width="100%" height="100%" 
-            src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+            src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0" 
             frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowfullscreen style="position:absolute; inset:0;">
         </iframe>`;
