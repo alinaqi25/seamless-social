@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const animateStars = () => {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "rgba(255, 255, 255, 0.45)"; // Brought stardust opacity back up to make it clearly visible
+      ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
 
       stars.forEach((star) => {
         star.x += star.vx;
@@ -204,18 +204,21 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       const clientName = document.getElementById("fieldName").value.trim();
-      const clientContact = document.getElementById("fieldContact").value.trim();
+      const clientContact = document
+        .getElementById("fieldContact")
+        .value.trim();
 
       const revenue = formData["revenue"];
       const spend = formData["spend"];
       const timeline = formData["timeline"];
 
-      // ADJUST CONDITIONALS HERE IF YOU WANT TO LOOSEN FILTERS DURING TESTING
       const isRevenueQualified = revenue !== "under40";
       const isSpendQualified = spend !== "under500";
-      const isTimelineQualified = timeline === "thisweek" || timeline === "thismonth";
+      const isTimelineQualified =
+        timeline === "thisweek" || timeline === "thismonth";
 
-      const isQualified = isRevenueQualified && isSpendQualified && isTimelineQualified;
+      const isQualified =
+        isRevenueQualified && isSpendQualified && isTimelineQualified;
 
       form.hidden = true;
       document.getElementById("formProgress").hidden = true;
@@ -225,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("resultQualified").hidden = false;
 
         const CALENDLY_LINK = "https://calendly.com/seamlesssocial2/30min";
-        
+
         if (window.Calendly) {
           window.Calendly.initInlineWidget({
             url: CALENDLY_LINK,
@@ -235,16 +238,17 @@ document.addEventListener("DOMContentLoaded", () => {
               email: clientContact.includes("@") ? clientContact : "",
             },
             pageSettings: {
-              backgroundColor: "010209", 
+              backgroundColor: "010209",
               hideTextColor: false,
-              textLinkColor: "7C8CFF", 
-              textColor: "F5F7FF", 
+              textLinkColor: "7C8CFF",
+              textColor: "F5F7FF",
             },
             utm: {},
           });
         } else {
-          // Robust fallback UI if Calendly script is blocked by browser privacy tools
-          const widgetContainer = document.getElementById("calendly-inline-widget");
+          const widgetContainer = document.getElementById(
+            "calendly-inline-widget",
+          );
           if (widgetContainer) {
             widgetContainer.innerHTML = `
               <div style="padding: 2rem; text-align: center; border: 1px dashed var(--glass-border); border-radius: var(--radius-md); margin-top: 1.5rem; background: rgba(255,255,255,0.01);">
@@ -281,7 +285,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const DATOCMS_READ_ONLY_TOKEN = "f4b3b8c10c8dc8ad68ef3f352cece6";
 
-// Utility function to extract YouTube IDs cleanly
 function getYouTubeId(url) {
   if (!url) return "dQw4w9WgXcQ";
   const regExp =
@@ -290,7 +293,6 @@ function getYouTubeId(url) {
   return match && match[2].length === 11 ? match[2] : "dQw4w9WgXcQ";
 }
 
-// Reusable local backup system if CMS returns errors or holds zero rows
 function renderTestimonialFallbacks() {
   const videoTrack = document.getElementById("videoSliderTrack");
   const textTrack = document.getElementById("textSliderTrack");
@@ -362,7 +364,7 @@ async function initTestimonials() {
       body: JSON.stringify({ query }),
     });
 
-    const { data, errors } = await response.json();
+    const { data, errors = null } = await response.json();
 
     if (errors) {
       console.error(
@@ -393,7 +395,6 @@ function renderVideoSlider(videos) {
   const track = document.getElementById("videoSliderTrack");
   if (!track || !videos || !videos.length) return;
 
-  // Triplicate or duplicate to guarantee smooth infinite fill across ultra-wide viewports
   const items = [...videos, ...videos, ...videos];
 
   track.innerHTML = items
@@ -469,20 +470,17 @@ function setupSliderDragging(wrapper, track) {
   let dragStartTranslate = 0;
   let totalDragDistance = 0;
 
-  // Luxury auto-scroll speed (pixels per frame)
   const autoScrollSpeed = 0.5;
 
-  // Direct script configuration to bypass any CSS transitions entirely
   track.style.transition = "none";
 
   function update() {
     if (!isDragging && !isHovered) {
       currentX -= autoScrollSpeed;
 
-      // Since elements are perfectly cloned, split width down into 3 clean sets
       const setWidth = track.scrollWidth / 3;
       if (Math.abs(currentX) >= setWidth) {
-        currentX = 0; // Seamless snap-back
+        currentX = 0;
       }
       track.style.transform = `translateX(${currentX}px) translateZ(0)`;
     }
@@ -490,7 +488,6 @@ function setupSliderDragging(wrapper, track) {
   }
   requestAnimationFrame(update);
 
-  // Mouse Down / Touch Start
   const startInteraction = (clientX) => {
     isDragging = true;
     wrapper.classList.add("is-dragging");
@@ -499,7 +496,6 @@ function setupSliderDragging(wrapper, track) {
     totalDragDistance = 0;
   };
 
-  // Mouse Move / Touch Move
   const moveInteraction = (clientX) => {
     if (!isDragging) return;
     const deltaX = clientX - startX;
@@ -508,7 +504,6 @@ function setupSliderDragging(wrapper, track) {
 
     const setWidth = track.scrollWidth / 3;
 
-    // Bounds wrapping logic inside drag state to prevent empty spaces
     if (currentX > 0) {
       currentX -= setWidth;
       dragStartTranslate -= setWidth;
@@ -520,19 +515,16 @@ function setupSliderDragging(wrapper, track) {
     track.style.transform = `translateX(${currentX}px) translateZ(0)`;
   };
 
-  // End Interaction
   const endInteraction = () => {
     if (!isDragging) return;
     isDragging = false;
     wrapper.classList.remove("is-dragging");
   };
 
-  // Mouse Listeners
   wrapper.addEventListener("mousedown", (e) => startInteraction(e.clientX));
   window.addEventListener("mousemove", (e) => moveInteraction(e.clientX));
   window.addEventListener("mouseup", endInteraction);
 
-  // Touch Listeners
   wrapper.addEventListener(
     "touchstart",
     (e) => startInteraction(e.touches[0].clientX),
@@ -545,7 +537,6 @@ function setupSliderDragging(wrapper, track) {
   );
   wrapper.addEventListener("touchend", endInteraction);
 
-  // Auto-scroll pause mechanics when cursor targets elements
   wrapper.addEventListener("mouseenter", () => (isHovered = true));
   wrapper.addEventListener("mouseleave", () => {
     isHovered = false;
@@ -553,7 +544,6 @@ function setupSliderDragging(wrapper, track) {
     wrapper.classList.remove("is-dragging");
   });
 
-  // CRITICAL FIX: Intercepts and completely destroys click events if the user was dragging
   wrapper.addEventListener(
     "click",
     (e) => {
@@ -563,5 +553,5 @@ function setupSliderDragging(wrapper, track) {
       }
     },
     true,
-  ); // Capturing phase execution preserves structure and kills downstream functions
+  );
 }
