@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
    10. DATOCMS INTEGRATION & INFINITE DRAG SLIDERS
    ============================================================ */
 
-const DATOCMS_READ_ONLY_TOKEN = "YOUR_DATOCMS_API_TOKEN_HERE";
+const DATOCMS_READ_ONLY_TOKEN = "f4b3b8c10c8dc8ad68ef3f352cece6";
 
 // Utility function to extract YouTube IDs cleanly
 function getYouTubeId(url) {
