@@ -4,24 +4,43 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   /* ============================================================
+       1. SCROLL ACTIVITY TRACKER (Zero-Overhead Animation Throttling)
+       ============================================================ */
+  window.isScrolling = false;
+  let scrollTimeout;
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      window.isScrolling = true;
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        window.isScrolling = false;
+      }, 120);
+    },
+    { passive: true }
+  );
+
+  /* ============================================================
        2. COSMIC BACKGROUND CANVAS (Optimized Rendering Engine)
        ============================================================ */
   const canvas = document.getElementById("stardust");
   if (canvas) {
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
     let width, height;
     const stars = [];
-    
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isMobileDevice = window.innerWidth < 768;
 
     const initCanvas = () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
 
       const viewportSurfaceArea = width * height;
-      const targetStarDensityFactor = 8500; 
-      
-      let adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), 160);
+      const targetStarDensityFactor = isMobileDevice ? 14000 : 8500;
+
+      let adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), isMobileDevice ? 50 : 140);
       if (prefersReducedMotion) adjustedCount = Math.floor(adjustedCount * 0.2);
 
       stars.length = 0;
@@ -29,29 +48,33 @@ document.addEventListener("DOMContentLoaded", () => {
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: Math.random() * 1.1,
-          vx: (Math.random() - 0.5) * 0.15,
-          vy: (Math.random() - 0.5) * 0.15,
+          radius: Math.random() * (isMobileDevice ? 0.9 : 1.1),
+          vx: (Math.random() - 0.5) * 0.12,
+          vy: (Math.random() - 0.5) * 0.12,
         });
       }
     };
 
     let resizeTimeout;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(initCanvas, 150);
-    }, { passive: true });
-    
+    window.addEventListener(
+      "resize",
+      () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(initCanvas, 150);
+      },
+      { passive: true }
+    );
+
     initCanvas();
 
-    const isMobileDevice = window.innerWidth < 768;
-    const frameInterval = isMobileDevice ? (1000 / 30) : (1000 / 60);
+    const frameInterval = isMobileDevice ? 1000 / 30 : 1000 / 60;
     let lastRenderTime = performance.now();
 
     const animateStars = (currentTime) => {
       requestAnimationFrame(animateStars);
 
-      if (document.hidden) return;
+      // PAUSE heavy canvas rendering when tab is hidden or user is actively scrolling
+      if (document.hidden || window.isScrolling) return;
 
       const delta = currentTime - lastRenderTime;
       if (delta < frameInterval) return;
@@ -59,14 +82,14 @@ document.addEventListener("DOMContentLoaded", () => {
       lastRenderTime = currentTime - (delta % frameInterval);
 
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "rgba(245, 247, 255, 0.8)";
+      ctx.fillStyle = "rgba(245, 247, 255, 0.75)";
 
       const len = stars.length;
       for (let i = 0; i < len; i++) {
         const star = stars[i];
-        
-        star.x += star.vx * (isMobileDevice ? 2 : 1);
-        star.y += star.vy * (isMobileDevice ? 2 : 1);
+
+        star.x += star.vx * (isMobileDevice ? 1.5 : 1);
+        star.y += star.vy * (isMobileDevice ? 1.5 : 1);
 
         if (star.x < 0) star.x = width;
         if (star.x > width) star.x = 0;
@@ -115,15 +138,19 @@ document.addEventListener("DOMContentLoaded", () => {
   heroRevealElements.forEach((el, index) => {
     el.style.setProperty("--reveal-delay", `${index * 0.12}s`);
     el.style.willChange = "transform, opacity";
-    
+
     requestAnimationFrame(() => {
       el.classList.add("is-visible");
     });
 
-    el.addEventListener("transitionend", function clearLayer() {
-      el.style.willChange = "";
-      el.removeEventListener("transitionend", clearLayer);
-    }, { once: true });
+    el.addEventListener(
+      "transitionend",
+      function clearLayer() {
+        el.style.willChange = "";
+        el.removeEventListener("transitionend", clearLayer);
+      },
+      { once: true }
+    );
   });
 
   /* ============================================================
@@ -281,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ==========================================================================
-   10. DATOCMS INTEGRATION & LUXURY INFINITE DRAG SLIDERS
+   10. DATOCMS INTEGRATION & OPTIMIZED INFINITE DRAG SLIDERS
    ========================================================================== */
 const DATOCMS_READ_ONLY_TOKEN = "f4b3b8c10c8dc8ad68ef3f352cece6";
 
@@ -331,7 +358,10 @@ async function initTestimonials() {
       body: JSON.stringify({ query }),
     });
     const { data, errors = null } = await response.json();
-    if (errors || !data) { renderTestimonialFallbacks(); return; }
+    if (errors || !data) {
+      renderTestimonialFallbacks();
+      return;
+    }
     renderVideoSlider(data.allVideoTestimonials);
     renderTextSlider(data.allTextTestimonials);
     renderLogoMarquee(data.allLogoStrips);
@@ -344,19 +374,21 @@ function renderVideoSlider(videos) {
   const track = document.getElementById("videoSliderTrack");
   if (!track || !videos || !videos.length) return;
   const items = [...videos, ...videos, ...videos];
-  track.innerHTML = items.map((vid) => {
-    const videoId = getYouTubeId(vid.youtubeLink);
-    return `
+  track.innerHTML = items
+    .map((vid) => {
+      const videoId = getYouTubeId(vid.youtubeLink);
+      return `
       <div class="glass-card glass-card--ecom video-card">
         <div class="card-grid-texture"></div>
         <div class="video-thumb-container" onclick="handleVideoPlay(this, '${videoId}')">
-          <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="${vid.title || "Video testimonial"}" draggable="false">
+          <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="${vid.title || "Video testimonial"}" draggable="false" loading="lazy">
           <button class="play-btn" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%)" aria-label="Play video">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7-11-7z" fill="currentColor"/></svg>
           </button>
         </div>
       </div>`;
-  }).join("");
+    })
+    .join("");
   setupSliderDragging(document.querySelector(".video-slider-wrapper"), track);
 }
 
@@ -368,23 +400,25 @@ function renderTextSlider(testimonials) {
   const track = document.getElementById("textSliderTrack");
   if (!track || !testimonials || !testimonials.length) return;
   const items = [...testimonials, ...testimonials, ...testimonials];
-  track.innerHTML = items.map((t) => {
-    const targetRating = typeof t.rating === "number" ? t.rating : 5;
-    const logoUrl = t.logo?.url || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='%231B4CF2'><circle cx='22' cy='22' r='22'/></svg>";
-    return `
+  track.innerHTML = items
+    .map((t) => {
+      const targetRating = typeof t.rating === "number" ? t.rating : 5;
+      const logoUrl = t.logo?.url || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='%231B4CF2'><circle cx='22' cy='22' r='22'/></svg>";
+      return `
       <div class="glass-card glass-card--ecom pad text-card">
         <div class="card-grid-texture"></div>
         <div class="text-card__stars">${"★".repeat(targetRating)}</div>
         <p class="testimonial-card__quote">"${t.reviewText || ""}"</p>
         <div class="text-card__header">
-          <img class="text-card__logo" src="${logoUrl}" alt="${t.companyName || "Client"}" draggable="false">
+          <img class="text-card__logo" src="${logoUrl}" alt="${t.companyName || "Client"}" draggable="false" loading="lazy">
           <div>
             <h4 style="margin:0; font-size:1rem;">${t.companyName || "Verified Founder"}</h4>
             <span class="testimonial-card__author" style="margin:0;">Partner Brand</span>
           </div>
         </div>
       </div>`;
-  }).join("");
+    })
+    .join("");
   setupSliderDragging(document.querySelector(".text-slider-wrapper"), track);
 }
 
@@ -392,79 +426,119 @@ function renderLogoMarquee(logoStrips) {
   const track = document.querySelector(".logos__track");
   if (!track || !logoStrips || !logoStrips.length) return;
   let extendedLogos = [...logoStrips];
-  
-  while (extendedLogos.length < 8) { extendedLogos = extendedLogos.concat(logoStrips); }
-  track.innerHTML = extendedLogos.map((logoStrip) => `
+
+  while (extendedLogos.length < 8) {
+    extendedLogos = extendedLogos.concat(logoStrips);
+  }
+  track.innerHTML = extendedLogos
+    .map(
+      (logoStrip) => `
     <span class="asset-slot asset-slot--logo-strip" data-label="LOGO">
       <img src="${logoStrip.logoImage?.url || ""}" alt="${logoStrip.logoImage?.alt || "Client logo"}" onerror="handleAssetError(this)" loading="lazy" decoding="async" />
-    </span>`).join("");
-    
+    </span>`
+    )
+    .join("");
+
   track.innerHTML += track.innerHTML;
 }
 
 function setupSliderDragging(wrapper, track) {
   if (!wrapper || !track) return;
-  let currentX = 0, isDragging = false, isHovered = false, startX = 0, dragStartTranslate = 0, totalDragDistance = 0;
+  let currentX = 0,
+    isDragging = false,
+    isHovered = false,
+    startX = 0,
+    dragStartTranslate = 0;
   const autoScrollSpeed = 0.4;
   let isSliderVisible = false;
   let animationFrameId = null;
 
   function update() {
-    if (!isSliderVisible && !isDragging) {
-      animationFrameId = null;
-      return;
+    // PAUSE animation during active scroll to eliminate layout thrashing
+    if (!isSliderVisible || window.isScrolling) {
+      if (!isDragging) {
+        animationFrameId = requestAnimationFrame(update);
+        return;
+      }
     }
-    if (!isDragging && !isHovered && isSliderVisible) {
+
+    if (!isDragging && !isHovered && isSliderVisible && !window.isScrolling) {
       currentX -= autoScrollSpeed;
       const setWidth = track.scrollWidth / 3;
       if (setWidth > 0 && Math.abs(currentX) >= setWidth) currentX = 0;
-      track.style.transform = `translateX(${currentX}px) translateZ(0)`;
+      track.style.transform = `translate3d(${currentX}px, 0, 0)`;
     }
     animationFrameId = requestAnimationFrame(update);
   }
 
-  function startAnimation() {
-    if (!animationFrameId) {
-      animationFrameId = requestAnimationFrame(update);
-    }
-  }
-
-  const visibilityObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      isSliderVisible = entry.isIntersecting;
-      if (isSliderVisible) {
-        startAnimation();
-      }
-    });
-  }, { threshold: 0.01 });
+  const visibilityObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        isSliderVisible = entry.isIntersecting;
+        if (isSliderVisible && !animationFrameId) {
+          animationFrameId = requestAnimationFrame(update);
+        }
+      });
+    },
+    { threshold: 0.01 }
+  );
   visibilityObserver.observe(wrapper);
 
   wrapper.addEventListener("mousedown", (e) => {
-    isDragging = true; wrapper.classList.add("is-dragging"); startX = e.clientX; dragStartTranslate = currentX; totalDragDistance = 0;
-    startAnimation();
+    isDragging = true;
+    wrapper.classList.add("is-dragging");
+    startX = e.clientX;
+    dragStartTranslate = currentX;
+    if (!animationFrameId) animationFrameId = requestAnimationFrame(update);
   });
+
   window.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
-    const deltaX = e.clientX - startX; totalDragDistance = Math.abs(deltaX); currentX = dragStartTranslate + deltaX;
+    const deltaX = e.clientX - startX;
+    currentX = dragStartTranslate + deltaX;
     const setWidth = track.scrollWidth / 3;
     if (setWidth > 0) {
-      if (currentX > 0) { currentX -= setWidth; dragStartTranslate -= setWidth; }
-      else if (Math.abs(currentX) >= setWidth) { currentX += setWidth; dragStartTranslate += setWidth; }
+      if (currentX > 0) {
+        currentX -= setWidth;
+        dragStartTranslate -= setWidth;
+      } else if (Math.abs(currentX) >= setWidth) {
+        currentX += setWidth;
+        dragStartTranslate += setWidth;
+      }
     }
-    track.style.transform = `translateX(${currentX}px) translateZ(0)`;
+    track.style.transform = `translate3d(${currentX}px, 0, 0)`;
   });
-  window.addEventListener("mouseup", () => { isDragging = false; wrapper.classList.remove("is-dragging"); });
 
-  wrapper.addEventListener("touchstart", (e) => { 
-    isDragging = true; startX = e.touches[0].clientX; dragStartTranslate = currentX; 
-    startAnimation();
-  }, { passive: true });
-  wrapper.addEventListener("touchmove", (e) => {
-    if (!isDragging) return;
-    currentX = dragStartTranslate + (e.touches[0].clientX - startX);
-    track.style.transform = `translateX(${currentX}px) translateZ(0)`;
-  }, { passive: true });
-  wrapper.addEventListener("touchend", () => isDragging = false);
-  wrapper.addEventListener("mouseenter", () => isHovered = true);
-  wrapper.addEventListener("mouseleave", () => { isHovered = false; isDragging = false; });
+  window.addEventListener("mouseup", () => {
+    isDragging = false;
+    wrapper.classList.remove("is-dragging");
+  });
+
+  wrapper.addEventListener(
+    "touchstart",
+    (e) => {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      dragStartTranslate = currentX;
+      if (!animationFrameId) animationFrameId = requestAnimationFrame(update);
+    },
+    { passive: true }
+  );
+
+  wrapper.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!isDragging) return;
+      currentX = dragStartTranslate + (e.touches[0].clientX - startX);
+      track.style.transform = `translate3d(${currentX}px, 0, 0)`;
+    },
+    { passive: true }
+  );
+
+  wrapper.addEventListener("touchend", () => (isDragging = false));
+  wrapper.addEventListener("mouseenter", () => (isHovered = true));
+  wrapper.addEventListener("mouseleave", () => {
+    isHovered = false;
+    isDragging = false;
+  });
 }
