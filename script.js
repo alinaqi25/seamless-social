@@ -4,22 +4,27 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   /* ============================================================
-       2. COSMIC BACKGROUND CANVAS (Stardust Area Density Match Engine)
+       2. COSMIC BACKGROUND CANVAS (Optimized Frame Throttling Engine)
        ============================================================ */
   const canvas = document.getElementById("stardust");
   if (canvas) {
     const ctx = canvas.getContext("2d");
     let width, height;
     const stars = [];
+    
+    // Check user accessibility preference for reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const initCanvas = () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
 
-      // density calculation": visual density metric for mobile/desktop sizes
       const viewportSurfaceArea = width * height;
-      const targetStarDensityFactor = 8500; // visual pacing per square unit area
-      const adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), 160);
+      const targetStarDensityFactor = 8500; 
+      
+      // Cut star count down by 80% if client prefers reduced motion
+      let adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), 160);
+      if (prefersReducedMotion) adjustedCount = Math.floor(adjustedCount * 0.2);
 
       stars.length = 0;
       for (let i = 0; i < adjustedCount; i++) {
@@ -27,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
           x: Math.random() * width,
           y: Math.random() * height,
           radius: Math.random() * 1.1,
-          vx: (Math.random() - 0.5) * 0.05,
-          vy: (Math.random() - 0.5) * 0.05,
+          vx: (Math.random() - 0.5) * 0.15,
+          vy: (Math.random() - 0.5) * 0.15,
         });
       }
     };
@@ -41,15 +46,32 @@ document.addEventListener("DOMContentLoaded", () => {
     
     initCanvas();
 
-    const animateStars = () => {
+    // Cap refresh cycles on mobile to 30 FPS to reduce background alpha blend steps
+    const isMobileDevice = window.innerWidth < 768;
+    const frameInterval = isMobileDevice ? (1000 / 30) : (1000 / 60);
+    let lastRenderTime = performance.now();
+
+    const animateStars = (currentTime) => {
+      requestAnimationFrame(animateStars);
+
+      // Early escape if the page tab isn't active
+      if (document.hidden) return;
+
+      const delta = currentTime - lastRenderTime;
+      if (delta < frameInterval) return;
+
+      lastRenderTime = currentTime - (delta % frameInterval);
+
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = "rgba(245, 247, 255, 0.8)";
 
       const len = stars.length;
       for (let i = 0; i < len; i++) {
         const star = stars[i];
-        star.x += star.vx;
-        star.y += star.vy;
+        
+        // Scale position changes to keep perceived speed identical at 30 FPS
+        star.x += star.vx * (isMobileDevice ? 2 : 1);
+        star.y += star.vy * (isMobileDevice ? 2 : 1);
 
         if (star.x < 0) star.x = width;
         if (star.x > width) star.x = 0;
@@ -60,8 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.arc(star.x, star.y, star.radius, 0, 6.28318);
         ctx.fill();
       }
-
-      requestAnimationFrame(animateStars);
     };
     requestAnimationFrame(animateStars);
   }
@@ -96,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ============================================================
-       4. SCROLL REVEAL ANIMATIONS
+       4. SCROLL REVEAL ANIMATIONS (Dynamic GPU Layer Promotion)
        ============================================================ */
   const revealElements = document.querySelectorAll("[data-reveal]");
   const revealGroups = document.querySelectorAll("[data-reveal-group]");
@@ -112,8 +132,19 @@ document.addEventListener("DOMContentLoaded", () => {
     (entries, observer) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
+          const targetElement = entry.target;
+          
+          // Allocate memory layer *only* exactly when transition animation takes place
+          targetElement.style.willChange = "transform, opacity";
+          targetElement.classList.add("is-visible");
+          
+          // Flush layer data from hardware immediately when transition ends
+          targetElement.addEventListener("transitionend", function clearLayer() {
+            targetElement.style.willChange = "";
+            targetElement.removeEventListener("transitionend", clearLayer);
+          }, { once: true });
+
+          observer.unobserve(targetElement);
         }
       });
     },
@@ -123,13 +154,13 @@ document.addEventListener("DOMContentLoaded", () => {
   revealElements.forEach((el) => revealObserver.observe(el));
 
   /* ============================================================
-       5. INFINITE LOGO MARQUEE
+       5. INFINITE LOGO MARQUEE (Clean 2x Loop Optimization)
        ============================================================ */
   const marqueeTrack = document.querySelector(".logos__track");
   if (marqueeTrack) {
     const initialContent = marqueeTrack.innerHTML;
-    marqueeTrack.innerHTML = initialContent + initialContent + initialContent;
-    marqueeTrack.innerHTML += marqueeTrack.innerHTML;
+    // Precisely double elements instead of tripling/quadrupling to minimize DOM size
+    marqueeTrack.innerHTML = initialContent + initialContent;
   }
 
   /* ============================================================
@@ -389,11 +420,15 @@ function renderLogoMarquee(logoStrips) {
   const track = document.querySelector(".logos__track");
   if (!track || !logoStrips || !logoStrips.length) return;
   let extendedLogos = [...logoStrips];
-  while (extendedLogos.length < 15) { extendedLogos = extendedLogos.concat(logoStrips); }
+  
+  // Replicate array items cleanly up to a safe 8-item visual baseline width
+  while (extendedLogos.length < 8) { extendedLogos = extendedLogos.concat(logoStrips); }
   track.innerHTML = extendedLogos.map((logoStrip) => `
     <span class="asset-slot asset-slot--logo-strip" data-label="LOGO">
-      <img src="${logoStrip.logoImage?.url || ""}" alt="${logoStrip.logoImage?.alt || "Client logo"}" onerror="handleAssetError(this)" />
+      <img src="${logoStrip.logoImage?.url || ""}" alt="${logoStrip.logoImage?.alt || "Client logo"}" onerror="handleAssetError(this)" loading="lazy" decoding="async" />
     </span>`).join("");
+    
+  // Clone layout exactly twice for seamless track repetition
   track.innerHTML += track.innerHTML;
 }
 
@@ -401,9 +436,18 @@ function setupSliderDragging(wrapper, track) {
   if (!wrapper || !track) return;
   let currentX = 0, isDragging = false, isHovered = false, startX = 0, dragStartTranslate = 0, totalDragDistance = 0;
   const autoScrollSpeed = 0.4;
+  let isSliderVisible = true;
+
+  // Track visibility metrics to completely pause calculation loop when off-screen
+  const visibilityObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      isSliderVisible = entry.isIntersecting;
+    });
+  }, { threshold: 0.01 });
+  visibilityObserver.observe(wrapper);
 
   function update() {
-    if (!isDragging && !isHovered) {
+    if (!isDragging && !isHovered && isSliderVisible) {
       currentX -= autoScrollSpeed;
       const setWidth = track.scrollWidth / 3;
       if (Math.abs(currentX) >= setWidth) currentX = 0;
