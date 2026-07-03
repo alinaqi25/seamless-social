@@ -42,9 +42,7 @@
   --dur-slow: 1.5s;
 }
 
-/* ==========================================================================
-   RESET & BASE
-   ========================================================================== */
+/* Base & Reset */
 *,
 *::before,
 *::after {
@@ -65,6 +63,18 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
+
+/* Stop OS highlight flashes on mobile touch screens */
+button,
+input,
+textarea,
+select,
+summary,
+[role="button"],
+.video-thumb-container {
+  -webkit-tap-highlight-color: transparent;
+}
+
 h1,
 h2,
 h3,
@@ -125,9 +135,7 @@ svg {
   z-index: 1;
 }
 
-/* ==========================================================================
-   COSMIC BACKGROUND
-   ========================================================================== */
+/* Background canvas and lighting */
 .cosmic-bg {
   position: fixed;
   inset: 0;
@@ -203,9 +211,7 @@ svg {
   background-size: 4px 4px;
 }
 
-/* ==========================================================================
-   GLASS CARD SYSTEM & OPTIMIZED GLOW
-   ========================================================================== */
+/* Glass card styles */
 .glass-card {
   position: relative;
   background: var(--glass-fill);
@@ -227,6 +233,7 @@ svg {
   background: var(--glass-tint-dark);
   pointer-events: none;
   z-index: 0;
+  border-radius: inherit;
 }
 .glass-card > * {
   position: relative;
@@ -309,9 +316,7 @@ svg {
   z-index: 0;
 }
 
-/* ==========================================================================
-   SECTION 1: UNIFIED SYSTEM PANELS
-   ========================================================================== */
+/* Layout systems */
 .unified-system {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -349,9 +354,7 @@ svg {
   letter-spacing: -1px;
 }
 
-/* ==========================================================================
-   SECTION 2: EDITORIAL MASONRY QUOTES
-   ========================================================================== */
+/* Editorial masonry block */
 .editorial-masonry {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -390,9 +393,7 @@ svg {
   margin: 0;
 }
 
-/* ==========================================================================
-   SECTION 3 & 4: ASYMMETRIC BENTO GRIDS
-   ========================================================================== */
+/* Bento grids */
 .bento-grid {
   display: grid;
   gap: 1.5rem;
@@ -457,9 +458,7 @@ svg {
   margin: 0;
 }
 
-/* ==========================================================================
-   SECTION 5 CONNECTED TIMELINE TRACKS
-   ========================================================================== */
+/* Timeline component */
 .timeline-track {
   position: relative;
   display: flex;
@@ -515,9 +514,7 @@ svg {
   background: rgba(77, 232, 255, 0.05);
 }
 
-/* ==========================================================================
-   INTERACTIVE HOVER STATES
-   ========================================================================== */
+/* Media query prevents stick-hover states on mobile touchscreens */
 @media (hover: hover) and (pointer: fine) {
   .glass-card--ecom:hover {
     transform: translateY(-4px) translate3d(0, 0, 0);
@@ -526,11 +523,46 @@ svg {
       0 24px 48px rgba(0, 0, 0, 0.8),
       0 0 24px rgba(124, 140, 255, 0.03) !important;
   }
+
+  .btn--primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 12px 24px -4px rgba(27, 76, 242, 0.5);
+  }
+
+  .btn--gold:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow: 0 6px 16px rgba(230, 175, 46, 0.25);
+  }
+
+  .play-btn:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .option-btn:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.01);
+  }
+
+  .form-back:hover {
+    color: var(--text-primary);
+  }
+
+  .accordion__item:hover {
+    transform: translateY(-2px) translate3d(0, 0, 0);
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.9),
+      0 0 24px rgba(124, 140, 255, 0.02) !important;
+  }
 }
 
-/* ==========================================================================
-   ASSET PLACEHOLDER SLOTS
-   ========================================================================== */
+/* Asset slot fallbacks */
 .asset-slot {
   position: relative;
   display: block;
@@ -637,9 +669,7 @@ svg {
   border: 1px solid var(--glass-border);
 }
 
-/* ==========================================================================
-   NAVIGATION
-   ========================================================================== */
+/* Navigation bar */
 .nav-wrap {
   position: fixed;
   top: 20px;
@@ -651,7 +681,7 @@ svg {
   padding: 0 20px;
   transform: translate3d(0, 0, 0);
 }
-.nav {
+.nav.glass-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -660,9 +690,10 @@ svg {
   max-width: 940px;
   padding: 1rem 0.9rem 1rem 1.5rem;
   border-radius: var(--radius-pill);
+  overflow: visible !important;
 }
 .nav::before {
-  background: rgba(1, 2, 8, 0.55);
+  background: rgba(1, 2, 8, 0.65);
 }
 .nav__brand {
   display: flex;
@@ -689,9 +720,7 @@ svg {
   color: var(--white);
 }
 
-/* ==========================================================================
-   BUTTONS & ACTIONS
-   ========================================================================== */
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -715,13 +744,6 @@ svg {
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 8px 20px -4px rgba(27, 76, 242, 0.4);
 }
-.btn--primary:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.08);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 12px 24px -4px rgba(27, 76, 242, 0.5);
-}
 .btn--primary:active {
   transform: translateY(0);
 }
@@ -732,11 +754,6 @@ svg {
   font-size: 0.85rem;
   box-shadow: 0 4px 12px rgba(230, 175, 46, 0.15);
 }
-.btn--gold:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-  box-shadow: 0 6px 16px rgba(230, 175, 46, 0.25);
-}
 .btn--small {
   padding: 0.7rem 1.5rem;
   font-size: 0.9rem;
@@ -746,9 +763,7 @@ svg {
   font-size: 1rem;
 }
 
-/* ==========================================================================
-   SHARED SECTIONS
-   ========================================================================== */
+/* Shared section spacing */
 main {
   display: block;
 }
@@ -808,9 +823,7 @@ main {
   margin-bottom: 1.2rem;
 }
 
-/* ==========================================================================
-   REVEAL-ON-SCROLL
-   ========================================================================== */
+/* Scroll reveal animations */
 [data-reveal] {
   opacity: 0;
   transform: translateY(22px);
@@ -824,9 +837,7 @@ main {
   transform: translateY(0);
 }
 
-/* ==========================================================================
-   HERO SECTION
-   ========================================================================== */
+/* Hero layout */
 .hero {
   padding: clamp(7.5rem, 13vw, 10rem) 24px 4rem;
   text-align: center;
@@ -896,11 +907,6 @@ main {
     background var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease);
 }
-.play-btn:hover {
-  transform: scale(1.05);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.25);
-}
 .hero__video-label {
   font-size: 0.8rem;
   color: var(--text-faint);
@@ -934,9 +940,7 @@ main {
   }
 }
 
-/* ==========================================================================
-   CLIENT MARQUEE
-   ========================================================================== */
+/* Logos marquee banner */
 .logos {
   padding: 2rem 24px 5rem;
   text-align: center;
@@ -985,9 +989,7 @@ main {
   }
 }
 
-/* ==========================================================================
-   STAT STACKING
-   ========================================================================== */
+/* Stat card metrics */
 .stat-card {
   text-align: center;
   border-color: rgba(74, 222, 128, 0.04);
@@ -1005,9 +1007,7 @@ main {
   color: var(--text-muted);
 }
 
-/* ==========================================================================
-   OFFER & LAYOUT ELEMENTS
-   ========================================================================== */
+/* Offer checklist layout */
 .offer-layout {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
@@ -1058,9 +1058,7 @@ main {
   font-weight: 500;
 }
 
-/* ==========================================================================
-   ACCORDION
-   ========================================================================== */
+/* Accordion FAQs */
 .accordion {
   max-width: 840px;
   margin: 0 auto;
@@ -1118,16 +1116,6 @@ main {
   z-index: 0;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .accordion__item:hover {
-    transform: translateY(-2px) translate3d(0, 0, 0);
-    border-color: rgba(255, 255, 255, 0.16) !important;
-    box-shadow:
-      0 20px 48px rgba(0, 0, 0, 0.9),
-      0 0 24px rgba(124, 140, 255, 0.02) !important;
-  }
-}
-
 .accordion__trigger {
   position: relative;
   z-index: 1;
@@ -1159,10 +1147,6 @@ main {
     transform var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease),
     color var(--dur-fast) var(--ease);
-}
-
-.accordion__item:hover .accordion__icon {
-  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .accordion__icon::before,
@@ -1221,9 +1205,7 @@ main {
   grid-template-rows: 1fr;
 }
 
-/* ==========================================================================
-   QUALIFYING FORM
-   ========================================================================== */
+/* Multi-step qualification form */
 .section--final {
   text-align: center;
 }
@@ -1299,10 +1281,6 @@ main {
   font-size: 0.92rem;
   transition: border-color var(--dur-fast);
 }
-.option-btn:hover {
-  border-color: rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.01);
-}
 .option-btn.is-selected {
   border-color: var(--bleed-cyan);
   background: rgba(77, 232, 255, 0.04);
@@ -1350,9 +1328,6 @@ main {
   padding: 0.4rem 0;
   transition: color var(--dur-fast);
 }
-.form-back:hover {
-  color: var(--text-primary);
-}
 .form-result {
   text-align: center;
   padding: 1.5rem 0;
@@ -1367,9 +1342,7 @@ main {
   color: var(--text-muted);
 }
 
-/* ==========================================================================
-   FOOTER
-   ========================================================================== */
+/* Footer layout */
 .footer {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -1410,19 +1383,16 @@ main {
   margin: 0;
 }
 
-/* ==========================================================================
-   SLIDER LAYOUT MECHANICS
-   ========================================================================== */
+/* Testimonials carousel container */
 .slider-wrapper {
   overflow: hidden;
   width: 100%;
   position: relative;
   cursor: grab;
-  margin-bottom: 4rem;
-  padding: 20px 0;
+  margin-bottom: 2rem;
+  padding: 20px 0 64px;
   user-select: none;
   -webkit-user-select: none;
-  contain: content;
 }
 .slider-wrapper.is-dragging {
   cursor: grabbing;
@@ -1475,11 +1445,8 @@ main {
   pointer-events: none;
 }
 
-/* ==========================================================================
-   RESPONSIVE & MOBILE GPU HARDWARE OPTIMIZATIONS
-   ========================================================================== */
+/* Hardware performance overrides for older/mobile screens */
 @media (max-width: 960px), (prefers-reduced-motion: reduce) {
-  /* ELIMINATE GPU FILL-RATE OVERLOAD ON OLDER & MOBILE DEVICES */
   .glass-card,
   .glass-card--ecom,
   .accordion__item,

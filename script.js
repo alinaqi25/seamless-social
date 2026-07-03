@@ -1,11 +1,5 @@
-/* ==========================================================================
-   SEAMLESS SOCIAL — script.js (Optimized Performance Rendering Engine)
-   ========================================================================== */
-
 document.addEventListener("DOMContentLoaded", () => {
-  /* ============================================================
-       1. SCROLL ACTIVITY TRACKER (Zero-Overhead Animation Throttling)
-       ============================================================ */
+  // Throttle heavy layout actions while actively scrolling
   window.isScrolling = false;
   let scrollTimeout;
 
@@ -21,9 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { passive: true }
   );
 
-  /* ============================================================
-       2. COSMIC BACKGROUND CANVAS (Optimized Rendering Engine)
-       ============================================================ */
+  // Background starfield rendering loop
   const canvas = document.getElementById("stardust");
   if (canvas) {
     const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
@@ -73,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const animateStars = (currentTime) => {
       requestAnimationFrame(animateStars);
 
-      // PAUSE heavy canvas rendering when tab is hidden or user is actively scrolling
       if (document.hidden || window.isScrolling) return;
 
       const delta = currentTime - lastRenderTime;
@@ -102,9 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(animateStars);
   }
 
-  /* ============================================================
-       3. MOBILE NAVIGATION TOGGLE
-       ============================================================ */
+  // Mobile navigation menu toggle
   const navToggle = document.getElementById("navToggle");
   const navLinks = document.getElementById("navLinks");
 
@@ -131,9 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ============================================================
-       4. HERO INITIAL REVEAL (Page Load Only - Zero Scroll Overhead)
-       ============================================================ */
+  // Trigger hero entrance animations on initial page load
   const heroRevealElements = document.querySelectorAll("#hero [data-reveal]");
   heroRevealElements.forEach((el, index) => {
     el.style.setProperty("--reveal-delay", `${index * 0.12}s`);
@@ -153,18 +140,14 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
-  /* ============================================================
-       5. INFINITE LOGO MARQUEE (Clean 2x Loop Optimization)
-       ============================================================ */
+  // Duplicate client logo strip to create seamless marquee loop
   const marqueeTrack = document.querySelector(".logos__track");
   if (marqueeTrack) {
     const initialContent = marqueeTrack.innerHTML;
     marqueeTrack.innerHTML = initialContent + initialContent;
   }
 
-  /* ============================================================
-       6. FAQ ACCORDION
-       ============================================================ */
+  // FAQ accordion toggling
   const accordionTriggers = document.querySelectorAll(".accordion__trigger");
   accordionTriggers.forEach((trigger) => {
     trigger.addEventListener("click", function () {
@@ -183,9 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /* ============================================================
-       7. MULTI-STEP QUALIFICATION FORM
-       ============================================================ */
+  // Multi-step lead form mechanics
   const form = document.getElementById("qualifyForm");
   if (form) {
     const steps = form.querySelectorAll(".form-step");
@@ -293,23 +274,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ============================================================
-       8. TESTIMONIALS SYSTEM INTEGRATION
-       ============================================================ */
   initTestimonials();
 
-  /* ============================================================
-       9. FOOTER DYNAMIC YEAR
-       ============================================================ */
+  // Set dynamic footer year
   const yearEl = document.getElementById("year");
   if (yearEl) {
     yearEl.textContent = new Date().getFullYear();
   }
 });
 
-/* ==========================================================================
-   10. DATOCMS INTEGRATION & OPTIMIZED INFINITE DRAG SLIDERS
-   ========================================================================== */
+// DatoCMS client data loader + fallback generators
 const DATOCMS_READ_ONLY_TOKEN = "f4b3b8c10c8dc8ad68ef3f352cece6";
 
 function getYouTubeId(url) {
@@ -442,6 +416,7 @@ function renderLogoMarquee(logoStrips) {
   track.innerHTML += track.innerHTML;
 }
 
+// Drag loop handling for testimonials sliders
 function setupSliderDragging(wrapper, track) {
   if (!wrapper || !track) return;
   let currentX = 0,
@@ -453,8 +428,24 @@ function setupSliderDragging(wrapper, track) {
   let isSliderVisible = false;
   let animationFrameId = null;
 
+  function getSetWidth() {
+    return track.scrollWidth / 3;
+  }
+
+  // Pre-position track at Set 2 so users can drag left immediately
+  function initPosition() {
+    const setWidth = getSetWidth();
+    if (setWidth > 0) {
+      currentX = -setWidth;
+      track.style.transform = `translate3d(${currentX}px, 0, 0)`;
+    }
+  }
+
+  initPosition();
+  setTimeout(initPosition, 100);
+  setTimeout(initPosition, 400);
+
   function update() {
-    // PAUSE animation during active scroll to eliminate layout thrashing
     if (!isSliderVisible || window.isScrolling) {
       if (!isDragging) {
         animationFrameId = requestAnimationFrame(update);
@@ -462,13 +453,19 @@ function setupSliderDragging(wrapper, track) {
       }
     }
 
-    if (!isDragging && !isHovered && isSliderVisible && !window.isScrolling) {
+    const setWidth = getSetWidth();
+
+    if (!isDragging && !isHovered && isSliderVisible && !window.isScrolling && setWidth > 0) {
       currentX -= autoScrollSpeed;
-      const setWidth = track.scrollWidth / 3;
-      if (setWidth > 0 && Math.abs(currentX) >= setWidth) currentX = 0;
+      if (currentX <= -2 * setWidth) {
+        currentX += setWidth;
+      }
+    }
+
+    animationFrameId = requestAnimationFrame(update);
+    if (setWidth > 0 && !isDragging) {
       track.style.transform = `translate3d(${currentX}px, 0, 0)`;
     }
-    animationFrameId = requestAnimationFrame(update);
   }
 
   const visibilityObserver = new IntersectionObserver(
@@ -496,12 +493,12 @@ function setupSliderDragging(wrapper, track) {
     if (!isDragging) return;
     const deltaX = e.clientX - startX;
     currentX = dragStartTranslate + deltaX;
-    const setWidth = track.scrollWidth / 3;
+    const setWidth = getSetWidth();
     if (setWidth > 0) {
-      if (currentX > 0) {
+      if (currentX >= 0) {
         currentX -= setWidth;
         dragStartTranslate -= setWidth;
-      } else if (Math.abs(currentX) >= setWidth) {
+      } else if (currentX <= -2 * setWidth) {
         currentX += setWidth;
         dragStartTranslate += setWidth;
       }
@@ -530,6 +527,16 @@ function setupSliderDragging(wrapper, track) {
     (e) => {
       if (!isDragging) return;
       currentX = dragStartTranslate + (e.touches[0].clientX - startX);
+      const setWidth = getSetWidth();
+      if (setWidth > 0) {
+        if (currentX >= 0) {
+          currentX -= setWidth;
+          dragStartTranslate -= setWidth;
+        } else if (currentX <= -2 * setWidth) {
+          currentX += setWidth;
+          dragStartTranslate += setWidth;
+        }
+      }
       track.style.transform = `translate3d(${currentX}px, 0, 0)`;
     },
     { passive: true }
