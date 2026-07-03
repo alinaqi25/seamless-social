@@ -1,10 +1,10 @@
 /* ==========================================================================
-   SEAMLESS SOCIAL — script.js
+   SEAMLESS SOCIAL — script.js (Optimized Core Rendering Engine)
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
   /* ============================================================
-       2. COSMIC BACKGROUND CANVAS (Stardust)
+       2. COSMIC BACKGROUND CANVAS (Stardust Area Density Match Engine)
        ============================================================ */
   const canvas = document.getElementById("stardust");
   if (canvas) {
@@ -15,26 +15,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const initCanvas = () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
+
+      // density calculation": visual density metric for mobile/desktop sizes
+      const viewportSurfaceArea = width * height;
+      const targetStarDensityFactor = 8500; // visual pacing per square unit area
+      const adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), 160);
+
+      stars.length = 0;
+      for (let i = 0; i < adjustedCount; i++) {
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 1.1,
+          vx: (Math.random() - 0.5) * 0.05,
+          vy: (Math.random() - 0.5) * 0.05,
+        });
+      }
     };
 
-    window.addEventListener("resize", initCanvas);
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(initCanvas, 150);
+    }, { passive: true });
+    
     initCanvas();
-
-    for (let i = 0; i < 150; i++) {
-      stars.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        radius: Math.random() * 1.2,
-        vx: (Math.random() - 0.5) * 0.08,
-        vy: (Math.random() - 0.5) * 0.08,
-      });
-    }
 
     const animateStars = () => {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+      ctx.fillStyle = "rgba(245, 247, 255, 0.8)";
 
-      stars.forEach((star) => {
+      const len = stars.length;
+      for (let i = 0; i < len; i++) {
+        const star = stars[i];
         star.x += star.vx;
         star.y += star.vy;
 
@@ -44,13 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (star.y > height) star.y = 0;
 
         ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.arc(star.x, star.y, star.radius, 0, 6.28318);
         ctx.fill();
-      });
+      }
 
       requestAnimationFrame(animateStars);
     };
-    animateStars();
+    requestAnimationFrame(animateStars);
   }
 
   /* ============================================================
@@ -89,11 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const revealGroups = document.querySelectorAll("[data-reveal-group]");
 
   revealGroups.forEach((group) => {
-    const children = group.querySelectorAll(
-      ":scope > [data-reveal], :scope > * [data-reveal]",
-    );
+    const children = group.querySelectorAll(":scope > [data-reveal], :scope > * [data-reveal]");
     children.forEach((child, index) => {
-      child.style.setProperty("--reveal-delay", `${index * 0.12}s`);
+      child.style.setProperty("--reveal-delay", `${index * 0.10}s`);
     });
   });
 
@@ -106,16 +117,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     },
-    {
-      threshold: 0.02,
-      rootMargin: "0px 0px -40px 0px",
-    },
+    { threshold: 0.01, rootMargin: "0px 0px -20px 0px" }
   );
 
   revealElements.forEach((el) => revealObserver.observe(el));
 
   /* ============================================================
-       5. INFINITE LOGO MARQUEE (Fallback Setup)
+       5. INFINITE LOGO MARQUEE
        ============================================================ */
   const marqueeTrack = document.querySelector(".logos__track");
   if (marqueeTrack) {
@@ -135,9 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       document.querySelectorAll(".accordion__item").forEach((accItem) => {
         accItem.classList.remove("is-open");
-        accItem
-          .querySelector(".accordion__trigger")
-          .setAttribute("aria-expanded", "false");
+        accItem.querySelector(".accordion__trigger").setAttribute("aria-expanded", "false");
       });
 
       if (!isExpanded) {
@@ -176,9 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const stepEl = this.closest(".form-step");
         const questionKey = stepEl.dataset.question;
 
-        parentGrid
-          .querySelectorAll(".option-btn")
-          .forEach((b) => b.classList.remove("is-selected"));
+        parentGrid.querySelectorAll(".option-btn").forEach((b) => b.classList.remove("is-selected"));
         this.classList.add("is-selected");
 
         formData[questionKey] = this.dataset.value;
@@ -205,9 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       const clientName = document.getElementById("fieldName").value.trim();
-      const clientContact = document
-        .getElementById("fieldContact")
-        .value.trim();
+      const clientContact = document.getElementById("fieldContact").value.trim();
 
       const revenue = formData["revenue"];
       const spend = formData["spend"];
@@ -215,11 +217,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const isRevenueQualified = revenue !== "under40";
       const isSpendQualified = spend !== "under500";
-      const isTimelineQualified =
-        timeline === "thisweek" || timeline === "thismonth";
-
-      const isQualified =
-        isRevenueQualified && isSpendQualified && isTimelineQualified;
+      const isTimelineQualified = timeline === "thisweek" || timeline === "thismonth";
+      const isQualified = isRevenueQualified && isSpendQualified && isTimelineQualified;
 
       form.hidden = true;
       document.getElementById("formProgress").hidden = true;
@@ -227,7 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isQualified) {
         document.getElementById("resultQualified").hidden = false;
-
         const CALENDLY_LINK = "https://calendly.com/seamlesssocial2/30min";
 
         if (window.Calendly) {
@@ -247,9 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
             utm: {},
           });
         } else {
-          const widgetContainer = document.getElementById(
-            "calendly-inline-widget",
-          );
+          const widgetContainer = document.getElementById("calendly-inline-widget");
           if (widgetContainer) {
             widgetContainer.innerHTML = `
               <div style="padding: 2rem; text-align: center; border: 1px dashed var(--glass-border); border-radius: var(--radius-md); margin-top: 1.5rem; background: rgba(255,255,255,0.01);">
@@ -268,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ============================================================
-       8. TESTIMONIALS SYSTEM INTEGRATION WITH FALLBACKS
+       8. TESTIMONIALS SYSTEM INTEGRATION
        ============================================================ */
   initTestimonials();
 
@@ -282,15 +278,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ==========================================================================
-   10. DATOCMS INTEGRATION & LUXURY INFINITE DRAG SLIDERS (OVERHAULED)
+   10. DATOCMS INTEGRATION & LUXURY INFINITE DRAG SLIDERS
    ========================================================================== */
-
 const DATOCMS_READ_ONLY_TOKEN = "f4b3b8c10c8dc8ad68ef3f352cece6";
 
 function getYouTubeId(url) {
   if (!url) return "dQw4w9WgXcQ";
-  const regExp =
-    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\/\?v=|\&v=)([^#\&\?]*).*/;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\/\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   return match && match[2].length === 11 ? match[2] : "dQw4w9WgXcQ";
 }
@@ -301,65 +295,27 @@ function renderTestimonialFallbacks() {
 
   if (videoTrack && videoTrack.children.length === 0) {
     const fallbackVideos = [
-      {
-        youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        title: "Client Video Review",
-      },
-      {
-        youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        title: "Brand Growth Story",
-      },
+      { youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Client Video Review" },
+      { youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Brand Growth Story" },
     ];
     renderVideoSlider(fallbackVideos);
   }
 
   if (textTrack && textTrack.children.length === 0) {
     const fallbackTexts = [
-      {
-        companyName: "Zenith Threads",
-        reviewText:
-          "The creative pipeline completely solved our fatigue issues. We scaled our Meta spend by 40% without drops in ROAS.",
-        rating: 5,
-        logo: {
-          url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop",
-        },
-      },
-      {
-        companyName: "GlowKit",
-        reviewText:
-          "Working directly with the founders made a massive difference. No overhead, just pure performance creative that converts.",
-        rating: 5,
-        logo: {
-          url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop",
-        },
-      },
+      { companyName: "Zenith Threads", reviewText: "The creative pipeline completely solved our fatigue issues. We scaled our Meta spend by 40% without drops in ROAS.", rating: 5, logo: { url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop" } },
+      { companyName: "GlowKit", reviewText: "Working directly with the founders made a massive difference. No overhead, just pure performance creative that converts.", rating: 5, logo: { url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop" } },
     ];
     renderTextSlider(fallbackTexts);
   }
 }
 
 async function initTestimonials() {
-  const query = `
-    {
-      allVideoTestimonials {
-        youtubeLink
-        title
-      }
-      allTextTestimonials {
-        companyName
-        reviewText
-        rating
-        logo {
-          url
-        }
-      }
-      allLogoStrips {
-        logoImage {
-          url
-          alt
-        }
-      }
-    }`;
+  const query = `{
+    allVideoTestimonials { youtubeLink title }
+    allTextTestimonials { companyName reviewText rating logo { url } }
+    allLogoStrips { logoImage { url alt } }
+  }`;
 
   try {
     const response = await fetch("https://graphql.datocms.com/", {
@@ -371,31 +327,12 @@ async function initTestimonials() {
       },
       body: JSON.stringify({ query }),
     });
-
     const { data, errors = null } = await response.json();
-
-    if (errors) {
-      console.error(
-        "❌ DatoCMS GraphQL Error Details:\n",
-        errors.map((e) => e.message).join("\n\n"),
-      );
-      renderTestimonialFallbacks();
-      return;
-    }
-
-    if (!data || !data.allVideoTestimonials || !data.allTextTestimonials || !data.allLogoStrips) {
-      console.error(
-        "DatoCMS Fetch Error: no data or incomplete structure returned from API",
-      );
-      renderTestimonialFallbacks();
-      return;
-    }
-
+    if (errors || !data) { renderTestimonialFallbacks(); return; }
     renderVideoSlider(data.allVideoTestimonials);
     renderTextSlider(data.allTextTestimonials);
     renderLogoMarquee(data.allLogoStrips);
   } catch (err) {
-    console.error("DatoCMS Network Fetch Error:", err);
     renderTestimonialFallbacks();
   }
 }
@@ -403,189 +340,99 @@ async function initTestimonials() {
 function renderVideoSlider(videos) {
   const track = document.getElementById("videoSliderTrack");
   if (!track || !videos || !videos.length) return;
-
   const items = [...videos, ...videos, ...videos];
-
-  track.innerHTML = items
-    .map((vid) => {
-      const videoId = getYouTubeId(vid.youtubeLink);
-      const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-      return `
-            <div class="glass-card video-card">
-                <div class="video-thumb-container" onclick="handleVideoPlay(this, '${videoId}')">
-                    <img src="${thumbUrl}" alt="${vid.title || "Video testimonial"}" draggable="false">
-                    <button class="play-btn" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%)" aria-label="Play video">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7-11-7z" fill="currentColor"/></svg>
-                    </button>
-                </div>
-            </div>
-        `;
-    })
-    .join("");
-
+  track.innerHTML = items.map((vid) => {
+    const videoId = getYouTubeId(vid.youtubeLink);
+    return `
+      <div class="glass-card glass-card--ecom video-card">
+        <div class="card-grid-texture"></div>
+        <div class="video-thumb-container" onclick="handleVideoPlay(this, '${videoId}')">
+          <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="${vid.title || "Video testimonial"}" draggable="false">
+          <button class="play-btn" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%)" aria-label="Play video">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7-11-7z" fill="currentColor"/></svg>
+          </button>
+        </div>
+      </div>`;
+  }).join("");
   setupSliderDragging(document.querySelector(".video-slider-wrapper"), track);
 }
 
 window.handleVideoPlay = function (container, videoId) {
-  container.innerHTML = `
-        <iframe width="100%" height="100%" 
-            src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0" 
-            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen style="position:absolute; inset:0;">
-        </iframe>`;
+  container.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; inset:0;"></iframe>`;
 };
 
 function renderTextSlider(testimonials) {
   const track = document.getElementById("textSliderTrack");
   if (!track || !testimonials || !testimonials.length) return;
-
   const items = [...testimonials, ...testimonials, ...testimonials];
-
-  track.innerHTML = items
-    .map((t) => {
-      const targetRating = typeof t.rating === "number" ? t.rating : 5;
-      const stars =
-        "★".repeat(targetRating) + "☆".repeat(Math.max(0, 5 - targetRating));
-      const logoUrl =
-        t.logo?.url ||
-        "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='%231B4CF2'><circle cx='22' cy='22' r='22'/></svg>";
-
-      return `
-            <div class="glass-card pad text-card">
-                <div class="text-card__stars">${stars}</div>
-                <p class="testimonial-card__quote">"${t.reviewText || ""}"</p>
-                <div class="text-card__header">
-                    <img class="text-card__logo" src="${logoUrl}" alt="${t.companyName || "Client"}" draggable="false">
-                    <div>
-                        <h4 style="margin:0; font-size:1rem;">${t.companyName || "Verified Founder"}</h4>
-                        <span class="testimonial-card__author" style="margin:0;">Partner Brand</span>
-                    </div>
-                </div>
-            </div>
-        `;
-    })
-    .join("");
-
+  track.innerHTML = items.map((t) => {
+    const targetRating = typeof t.rating === "number" ? t.rating : 5;
+    const logoUrl = t.logo?.url || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='%231B4CF2'><circle cx='22' cy='22' r='22'/></svg>";
+    return `
+      <div class="glass-card glass-card--ecom pad text-card">
+        <div class="card-grid-texture"></div>
+        <div class="text-card__stars">${"★".repeat(targetRating)}</div>
+        <p class="testimonial-card__quote">"${t.reviewText || ""}"</p>
+        <div class="text-card__header">
+          <img class="text-card__logo" src="${logoUrl}" alt="${t.companyName || "Client"}" draggable="false">
+          <div>
+            <h4 style="margin:0; font-size:1rem;">${t.companyName || "Verified Founder"}</h4>
+            <span class="testimonial-card__author" style="margin:0;">Partner Brand</span>
+          </div>
+        </div>
+      </div>`;
+  }).join("");
   setupSliderDragging(document.querySelector(".text-slider-wrapper"), track);
 }
 
 function renderLogoMarquee(logoStrips) {
   const track = document.querySelector(".logos__track");
   if (!track || !logoStrips || !logoStrips.length) return;
-
   let extendedLogos = [...logoStrips];
-  while (extendedLogos.length < 15) {
-    extendedLogos = extendedLogos.concat(logoStrips);
-  }
-
-  track.innerHTML = extendedLogos
-    .map((logoStrip) => {
-      const url = logoStrip.logoImage?.url || "";
-      const alt = logoStrip.logoImage?.alt || "Client logo";
-      return `
-        <span class="asset-slot asset-slot--logo-strip" data-label="LOGO">
-          <img src="${url}" alt="${alt}" onerror="handleAssetError(this)" />
-        </span>
-      `;
-    })
-    .join("");
-
-  const trackContent = track.innerHTML;
-  track.innerHTML += trackContent;
+  while (extendedLogos.length < 15) { extendedLogos = extendedLogos.concat(logoStrips); }
+  track.innerHTML = extendedLogos.map((logoStrip) => `
+    <span class="asset-slot asset-slot--logo-strip" data-label="LOGO">
+      <img src="${logoStrip.logoImage?.url || ""}" alt="${logoStrip.logoImage?.alt || "Client logo"}" onerror="handleAssetError(this)" />
+    </span>`).join("");
+  track.innerHTML += track.innerHTML;
 }
 
 function setupSliderDragging(wrapper, track) {
   if (!wrapper || !track) return;
-
-  let currentX = 0;
-  let isDragging = false;
-  let isHovered = false;
-  let startX = 0;
-  let dragStartTranslate = 0;
-  let totalDragDistance = 0;
-
-  const autoScrollSpeed = 0.5;
-
-  track.style.transition = "none";
+  let currentX = 0, isDragging = false, isHovered = false, startX = 0, dragStartTranslate = 0, totalDragDistance = 0;
+  const autoScrollSpeed = 0.4;
 
   function update() {
     if (!isDragging && !isHovered) {
       currentX -= autoScrollSpeed;
-
       const setWidth = track.scrollWidth / 3;
-      if (Math.abs(currentX) >= setWidth) {
-        currentX = 0;
-      }
+      if (Math.abs(currentX) >= setWidth) currentX = 0;
       track.style.transform = `translateX(${currentX}px) translateZ(0)`;
     }
     requestAnimationFrame(update);
   }
   requestAnimationFrame(update);
 
-  const startInteraction = (clientX) => {
-    isDragging = true;
-    wrapper.classList.add("is-dragging");
-    startX = clientX;
-    dragStartTranslate = currentX;
-    totalDragDistance = 0;
-  };
-
-  const moveInteraction = (clientX) => {
-    if (!isDragging) return;
-    const deltaX = clientX - startX;
-    totalDragDistance = Math.abs(deltaX);
-    currentX = dragStartTranslate + deltaX;
-
-    const setWidth = track.scrollWidth / 3;
-
-    if (currentX > 0) {
-      currentX -= setWidth;
-      dragStartTranslate -= setWidth;
-    } else if (Math.abs(currentX) >= setWidth) {
-      currentX += setWidth;
-      dragStartTranslate += setWidth;
-    }
-
-    track.style.transform = `translateX(${currentX}px) translateZ(0)`;
-  };
-
-  const endInteraction = () => {
-    if (!isDragging) return;
-    isDragging = false;
-    wrapper.classList.remove("is-dragging");
-  };
-
-  wrapper.addEventListener("mousedown", (e) => startInteraction(e.clientX));
-  window.addEventListener("mousemove", (e) => moveInteraction(e.clientX));
-  window.addEventListener("mouseup", endInteraction);
-
-  wrapper.addEventListener(
-    "touchstart",
-    (e) => startInteraction(e.touches[0].clientX),
-    { passive: true },
-  );
-  wrapper.addEventListener(
-    "touchmove",
-    (e) => moveInteraction(e.touches[0].clientX),
-    { passive: true },
-  );
-  wrapper.addEventListener("touchend", endInteraction);
-
-  wrapper.addEventListener("mouseenter", () => (isHovered = true));
-  wrapper.addEventListener("mouseleave", () => {
-    isHovered = false;
-    isDragging = false;
-    wrapper.classList.remove("is-dragging");
+  wrapper.addEventListener("mousedown", (e) => {
+    isDragging = true; wrapper.classList.add("is-dragging"); startX = e.clientX; dragStartTranslate = currentX; totalDragDistance = 0;
   });
+  window.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    const deltaX = e.clientX - startX; totalDragDistance = Math.abs(deltaX); currentX = dragStartTranslate + deltaX;
+    const setWidth = track.scrollWidth / 3;
+    if (currentX > 0) { currentX -= setWidth; dragStartTranslate -= setWidth; }
+    else if (Math.abs(currentX) >= setWidth) { currentX += setWidth; dragStartTranslate += setWidth; }
+    track.style.transform = `translateX(${currentX}px) translateZ(0)`;
+  });
+  window.addEventListener("mouseup", () => { isDragging = false; wrapper.classList.remove("is-dragging"); });
 
-  wrapper.addEventListener(
-    "click",
-    (e) => {
-      if (totalDragDistance > 8) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    },
-    true,
-  );
+  wrapper.addEventListener("touchstart", (e) => { isDragging = true; startX = e.touches[0].clientX; dragStartTranslate = currentX; }, { passive: true });
+  wrapper.addEventListener("touchmove", (e) => {
+    if (!isDragging) return;
+    currentX = dragStartTranslate + (e.touches[0].clientX - startX);
+    track.style.transform = `translateX(${currentX}px) translateZ(0)`;
+  }, { passive: true });
+  wrapper.addEventListener("touchend", () => isDragging = false);
+  wrapper.addEventListener("mouseenter", () => isHovered = true);
+  wrapper.addEventListener("mouseleave", () => { isHovered = false; isDragging = false; });
 }
