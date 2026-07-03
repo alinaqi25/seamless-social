@@ -73,8 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (star.y < 0) star.y = height;
         if (star.y > height) star.y = 0;
 
-        // HIGH PERFORMANCE FIX: Replaced expensive path vectors with raw fills
-        // Eliminates up to 480 layout engine state calls per frame while retaining the exact pixel look
         ctx.fillRect(star.x, star.y, star.radius * 1.5, star.radius * 1.5);
       }
     };
@@ -111,40 +109,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ============================================================
-       4. SCROLL REVEAL ANIMATIONS (Dynamic GPU Layer Promotion)
+       4. HERO INITIAL REVEAL (Page Load Only - Zero Scroll Overhead)
        ============================================================ */
-  const revealElements = document.querySelectorAll("[data-reveal]");
-  const revealGroups = document.querySelectorAll("[data-reveal-group]");
-
-  revealGroups.forEach((group) => {
-    const children = group.querySelectorAll(":scope > [data-reveal], :scope > * [data-reveal]");
-    children.forEach((child, index) => {
-      child.style.setProperty("--reveal-delay", `${index * 0.10}s`);
+  const heroRevealElements = document.querySelectorAll("#hero [data-reveal]");
+  heroRevealElements.forEach((el, index) => {
+    el.style.setProperty("--reveal-delay", `${index * 0.12}s`);
+    el.style.willChange = "transform, opacity";
+    
+    requestAnimationFrame(() => {
+      el.classList.add("is-visible");
     });
+
+    el.addEventListener("transitionend", function clearLayer() {
+      el.style.willChange = "";
+      el.removeEventListener("transitionend", clearLayer);
+    }, { once: true });
   });
-
-  const revealObserver = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const targetElement = entry.target;
-          
-          targetElement.style.willChange = "transform, opacity";
-          targetElement.classList.add("is-visible");
-          
-          targetElement.addEventListener("transitionend", function clearLayer() {
-            targetElement.style.willChange = "";
-            targetElement.removeEventListener("transitionend", clearLayer);
-          }, { once: true });
-
-          observer.unobserve(targetElement);
-        }
-      });
-    },
-    { threshold: 0.01, rootMargin: "0px 0px -20px 0px" }
-  );
-
-  revealElements.forEach((el) => revealObserver.observe(el));
 
   /* ============================================================
        5. INFINITE LOGO MARQUEE (Clean 2x Loop Optimization)
@@ -422,8 +402,6 @@ function renderLogoMarquee(logoStrips) {
   track.innerHTML += track.innerHTML;
 }
 
-// HIGH PERFORMANCE FIX: Completely rewritten slider lifecycle mechanism
-// Shuts down background update cycles completely when the component drops below the viewport fold
 function setupSliderDragging(wrapper, track) {
   if (!wrapper || !track) return;
   let currentX = 0, isDragging = false, isHovered = false, startX = 0, dragStartTranslate = 0, totalDragDistance = 0;
