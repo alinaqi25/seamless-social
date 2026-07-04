@@ -26,13 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const isMobileDevice = window.innerWidth < 768;
 
     const initCanvas = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      // Get the display pixel ratio (Retina/High-DPI factor for mobile screens)
+      const dpr = window.devicePixelRatio || 1;
+      width = window.innerWidth;
+      height = window.innerHeight;
+
+      // Scale the backing store coordinates to match physical screen pixels
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+
+      // Map the drawing scale to match the device pixel ratio for maximum sharpness
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const viewportSurfaceArea = width * height;
-      const targetStarDensityFactor = isMobileDevice ? 14000 : 8500;
+      const targetStarDensityFactor = 8500; 
 
-      let adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), isMobileDevice ? 50 : 140);
+      let adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), isMobileDevice ? 110 : 140);
       if (prefersReducedMotion) adjustedCount = Math.floor(adjustedCount * 0.2);
 
       stars.length = 0;
@@ -40,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: Math.random() * 1.1, 
+          radius: Math.random() * 1.1,
           vx: (Math.random() - 0.5) * 0.2,
           vy: (Math.random() - 0.5) * 0.2,
         });
@@ -74,8 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = isMobileDevice ? "rgba(255, 255, 255, 1.0)" : "rgba(245, 247, 255, 0.75)";
+
       const len = stars.length;
-      const sizeMultiplier = 1.5; // Fixed to match standard PC size scaling multiplier
+      const sizeMultiplier = 1.5; 
       for (let i = 0; i < len; i++) {
         const star = stars[i];
 
