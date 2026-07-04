@@ -693,7 +693,7 @@ svg {
   width: 100%;
   max-width: 940px;
   padding: 1rem 0.9rem 1rem 1.5rem;
-  background-color:#3054ca42;
+  background-color:#4467d842;
   border-radius: var(--radius-pill);
   overflow: visible !important;
   backdrop-filter: blur(19px);
