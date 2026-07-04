@@ -42,7 +42,6 @@
   --dur-slow: 1.5s;
 }
 
-/* Base & Reset */
 *,
 *::before,
 *::after {
@@ -64,7 +63,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Stop OS highlight flashes on mobile touch screens */
 button,
 input,
 textarea,
@@ -135,7 +133,6 @@ svg {
   z-index: 1;
 }
 
-/* Background canvas and lighting */
 .cosmic-bg {
   position: fixed;
   inset: 0;
@@ -215,7 +212,6 @@ svg {
   background-size: 4px 4px;
 }
 
-/* Glass card styles */
 .glass-card {
   position: relative;
   background: var(--glass-fill);
@@ -320,7 +316,6 @@ svg {
   z-index: 0;
 }
 
-/* Layout systems */
 .unified-system {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -358,7 +353,6 @@ svg {
   letter-spacing: -1px;
 }
 
-/* Editorial masonry block */
 .editorial-masonry {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -371,11 +365,11 @@ svg {
   justify-content: center;
 }
 .item--large {
-  grid-column: span 7;
+  grid-column: span 6;
   min-height: 240px;
 }
 .item--tall {
-  grid-column: span 5;
+  grid-column: span 6;
   min-height: 240px;
 }
 .item--wide {
@@ -397,7 +391,6 @@ svg {
   margin: 0;
 }
 
-/* Bento grids */
 .bento-grid {
   display: grid;
   gap: 1.5rem;
@@ -462,7 +455,6 @@ svg {
   margin: 0;
 }
 
-/* Timeline component */
 .timeline-track {
   position: relative;
   display: flex;
@@ -518,7 +510,6 @@ svg {
   background: rgba(77, 232, 255, 0.05);
 }
 
-/* Media query prevents stick-hover states on mobile touchscreens */
 @media (hover: hover) and (pointer: fine) {
   .glass-card--ecom:hover {
     transform: translateY(-4px) translate3d(0, 0, 0);
@@ -566,7 +557,6 @@ svg {
   }
 }
 
-/* Asset slot fallbacks */
 .asset-slot {
   position: relative;
   display: block;
@@ -673,7 +663,6 @@ svg {
   border: 1px solid var(--glass-border);
 }
 
-/* Navigation bar */
 .nav-wrap {
   position: fixed;
   top: 20px;
@@ -693,12 +682,11 @@ svg {
   width: 100%;
   max-width: 940px;
   padding: 1rem 0.9rem 1rem 1.5rem;
-  background-color:#4467d842;
+  background-color: #4467d842;
   border-radius: var(--radius-pill);
   overflow: visible !important;
   backdrop-filter: blur(19px);
   -webkit-backdrop-filter: blur(19px);
-  
 }
 .nav::before {
   background: rgba(1, 2, 8, 0.42);
@@ -761,7 +749,6 @@ svg {
   color: var(--white);
 }
 
-/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -804,7 +791,6 @@ svg {
   font-size: 1rem;
 }
 
-/* Shared section spacing */
 main {
   display: block;
 }
@@ -864,7 +850,6 @@ main {
   margin-bottom: 1.2rem;
 }
 
-/* Scroll reveal animations */
 [data-reveal] {
   opacity: 0;
   transform: translateY(22px);
@@ -878,7 +863,6 @@ main {
   transform: translateY(0);
 }
 
-/* Hero layout */
 .hero {
   padding: clamp(7.5rem, 13vw, 10rem) 24px 4rem;
   text-align: center;
@@ -981,7 +965,6 @@ main {
   }
 }
 
-/* Logos marquee banner */
 .logos {
   padding: 2rem 24px 5rem;
   text-align: center;
@@ -1030,7 +1013,6 @@ main {
   }
 }
 
-/* Stat card metrics */
 .stat-card {
   text-align: center;
   border-color: rgba(74, 222, 128, 0.04);
@@ -1048,7 +1030,6 @@ main {
   color: var(--text-muted);
 }
 
-/* Offer checklist layout */
 .offer-layout {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
@@ -1099,7 +1080,6 @@ main {
   font-weight: 500;
 }
 
-/* Accordion FAQs */
 .accordion {
   max-width: 840px;
   margin: 0 auto;
@@ -1247,7 +1227,6 @@ main {
   grid-template-rows: 1fr;
 }
 
-/* Multi-step qualification form */
 .section--final {
   text-align: center;
 }
@@ -1384,7 +1363,6 @@ main {
   color: var(--text-muted);
 }
 
-/* Footer layout */
 .footer {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -1425,7 +1403,6 @@ main {
   margin: 0;
 }
 
-/* Testimonials carousel container */
 .slider-wrapper {
   overflow: hidden;
   width: 100%;
@@ -1463,7 +1440,8 @@ main {
   object-fit: cover;
   pointer-events: none;
 }
-.text-card {
+.text-card,
+.voice-card {
   flex: 0 0 420px;
   max-width: 85vw;
 }
@@ -1472,11 +1450,15 @@ main {
   margin-bottom: 0.8rem;
   font-size: 1.2rem;
 }
-.text-card__header {
+.text-card__header,
+.voice-card__header {
   display: flex;
   align-items: center;
   gap: 16px;
   margin-top: 1.5rem;
+}
+.voice-card__header {
+  margin-top: 0;
 }
 .text-card__logo {
   width: 44px;
@@ -1486,33 +1468,12 @@ main {
   border: 1px solid var(--glass-border);
   pointer-events: none;
 }
+.voice-card__player audio {
+  accent-color: var(--electric-blue);
+}
 
-/* Hardware performance overrides for older/mobile screens */
-
-/*
-  Everything in this block targets ROOT CAUSES of mobile scroll jank, not just
-  symptoms, and applies deterministically by viewport width (not fragile device
-  sniffing) so it reliably fires on every phone regardless of browser/API support.
-
-  1) The fixed nav pill was the only element still using a live backdrop-filter
-     at all widths. Position:fixed + backdrop-filter means the browser re-blurs
-     everything scrolling underneath it on every scroll frame — expensive on
-     weak GPUs. Removed on mobile, replaced with a solid tint.
-  2) The two full-viewport background glows use `mix-blend-mode: screen` +
-     large-radius `filter: blur()`. Blend modes force a non-trivial compositing
-     path on budget GPUs (often falling back to software), and large blur
-     radii are costly in proportion to their pixel area — this one covers most
-     of the screen. Since the backdrop here is near-black, `screen` blending
-     is visually almost identical to normal alpha blending, so we drop the
-     blend mode and shrink the blur radius with negligible visual difference.
-  3) The repeating grid-line texture drawn on every single card is a cheap
-     effect individually, but multiplied by every card on the page it adds
-     real paint cost. Hidden on mobile — imperceptible at phone viewing distance.
-  4) Box-shadow blur radius cost scales with radius; shrunk on mobile so every
-     card is cheaper to rasterize without looking noticeably flatter.
-*/
 @media (max-width: 960px), (prefers-reduced-motion: reduce) {
-.glass-card:not(.nav),
+  .glass-card:not(.nav),
   .glass-card--ecom,
   .accordion__item, .play-btn {
     backdrop-filter: none !important;
@@ -1560,7 +1521,6 @@ main {
     display: none;
   }
 
-
   .unified-system {
     grid-template-columns: 1fr;
   }
@@ -1599,9 +1559,6 @@ main {
   }
 }
 
-/* Belt-and-suspenders: same treatment for wide-viewport devices (tablets,
-   budget Chromebooks) that the JS capability check in index.html still
-   flags as low-power despite a screen wider than 960px. */
 html.gpu-lite .nav.glass-card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -1677,7 +1634,32 @@ html.gpu-lite .center-glow {
   .video-card {
     flex: 0 0 320px;
   }
-  .text-card {
+  .text-card,
+  .voice-card {
     flex: 0 0 290px;
+  }
+}
+
+.slider-wrapper.slider-disabled {
+  cursor: default;
+  user-select: text;
+  -webkit-user-select: text;
+  padding-bottom: 30px;
+}
+
+.slider-wrapper.slider-disabled .slider-track {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  transform: none !important;
+}
+
+@media (max-width: 960px) {
+  .slider-wrapper.slider-disabled .slider-track {
+    padding: 0 10px;
   }
 }

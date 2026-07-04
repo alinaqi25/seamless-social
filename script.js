@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Throttle heavy layout actions while actively scrolling
   window.isScrolling = false;
   let scrollTimeout;
 
@@ -15,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     { passive: true }
   );
 
-  // Background starfield rendering loop
   const canvas = document.getElementById("stardust");
   if (canvas) {
     const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
@@ -27,18 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const isLowPowerDevice = document.documentElement.classList.contains("gpu-lite");
 
     const initCanvas = () => {
-      // Get the display pixel ratio (Retina/High-DPI factor for mobile screens),
-      // capped at 2x — stars are ~1px dots, so 3x+ backing stores just burn fill-rate
-      // for zero visible sharpness gain.
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
 
-      // Scale the backing store coordinates to match physical screen pixels
       canvas.width = width * dpr;
       canvas.height = height * dpr;
-
-      // Map the drawing scale to match the device pixel ratio for maximum sharpness
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const viewportSurfaceArea = width * height;
@@ -107,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(animateStars);
   }
 
-  // Mobile navigation menu toggle
   const navToggle = document.getElementById("navToggle");
   const navLinks = document.getElementById("navLinks");
 
@@ -134,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Trigger hero entrance animations on initial page load
   const heroRevealElements = document.querySelectorAll("#hero [data-reveal]");
   heroRevealElements.forEach((el, index) => {
     el.style.setProperty("--reveal-delay", `${index * 0.12}s`);
@@ -154,14 +144,12 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
-  // Duplicate client logo strip to create seamless marquee loop
   const marqueeTrack = document.querySelector(".logos__track");
   if (marqueeTrack) {
     const initialContent = marqueeTrack.innerHTML;
     marqueeTrack.innerHTML = initialContent + initialContent;
   }
 
-  // FAQ accordion toggling
   const accordionTriggers = document.querySelectorAll(".accordion__trigger");
   accordionTriggers.forEach((trigger) => {
     trigger.addEventListener("click", function () {
@@ -180,124 +168,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Multi-step lead form mechanics
-  const form = document.getElementById("qualifyForm");
-  if (form) {
-    const steps = form.querySelectorAll(".form-step");
-    const dots = document.querySelectorAll(".form-progress__dot");
-    const backBtn = document.getElementById("formBack");
-    let currentStep = 0;
-    let formData = {};
-
-    const updateFormUI = () => {
-      steps.forEach((step, index) => {
-        step.classList.toggle("is-active", index === currentStep);
-      });
-      dots.forEach((dot, index) => {
-        dot.classList.toggle("is-active", index === currentStep);
-        dot.classList.toggle("is-done", index < currentStep);
-      });
-      backBtn.hidden = currentStep === 0;
-    };
-
-    const optionBtns = form.querySelectorAll(".option-btn");
-    optionBtns.forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const parentGrid = this.closest(".option-grid");
-        const stepEl = this.closest(".form-step");
-        const questionKey = stepEl.dataset.question;
-
-        parentGrid.querySelectorAll(".option-btn").forEach((b) => b.classList.remove("is-selected"));
-        this.classList.add("is-selected");
-
-        formData[questionKey] = this.dataset.value;
-
-        if (currentStep < steps.length - 1) {
-          setTimeout(() => {
-            currentStep++;
-            updateFormUI();
-          }, 300);
-        }
-      });
-    });
-
-    if (backBtn) {
-      backBtn.addEventListener("click", () => {
-        if (currentStep > 0) {
-          currentStep--;
-          updateFormUI();
-        }
-      });
-    }
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const clientName = document.getElementById("fieldName").value.trim();
-      const clientContact = document.getElementById("fieldContact").value.trim();
-
-      const revenue = formData["revenue"];
-      const spend = formData["spend"];
-      const timeline = formData["timeline"];
-
-      const isRevenueQualified = revenue !== "under40";
-      const isSpendQualified = spend !== "under500";
-      const isTimelineQualified = timeline === "thisweek" || timeline === "thismonth";
-      const isQualified = isRevenueQualified && isSpendQualified && isTimelineQualified;
-
-      form.hidden = true;
-      document.getElementById("formProgress").hidden = true;
-      document.getElementById("formResult").hidden = false;
-
-      if (isQualified) {
-        document.getElementById("resultQualified").hidden = false;
-        const CALENDLY_LINK = "https://calendly.com/seamlesssocial2/30min";
-
-        if (window.Calendly) {
-          window.Calendly.initInlineWidget({
-            url: CALENDLY_LINK,
-            parentElement: document.getElementById("calendly-inline-widget"),
-            prefill: {
-              name: clientName,
-              email: clientContact.includes("@") ? clientContact : "",
-            },
-            pageSettings: {
-              backgroundColor: "010209",
-              hideTextColor: false,
-              textLinkColor: "7C8CFF",
-              textColor: "F5F7FF",
-            },
-            utm: {},
-          });
-        } else {
-          const widgetContainer = document.getElementById("calendly-inline-widget");
-          if (widgetContainer) {
-            widgetContainer.innerHTML = `
-              <div style="padding: 2rem; text-align: center; border: 1px dashed var(--glass-border); border-radius: var(--radius-md); margin-top: 1.5rem; background: rgba(255,255,255,0.01);">
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">An ad-blocker or privacy setting is blocking our calendar widget.</p>
-                <a href="${CALENDLY_LINK}" target="_blank" rel="noopener" class="btn btn--primary">
-                  Click here to book your call directly &rarr;
-                </a>
-              </div>
-            `;
-          }
-        }
-      } else {
-        document.getElementById("resultTeardown").hidden = false;
-      }
-    });
-  }
-
   initTestimonials();
 
-  // Set dynamic footer year
   const yearEl = document.getElementById("year");
   if (yearEl) {
     yearEl.textContent = new Date().getFullYear();
   }
 });
 
-// DatoCMS client data loader + fallback generators
 const DATOCMS_READ_ONLY_TOKEN = "f4b3b8c10c8dc8ad68ef3f352cece6";
 
 function getYouTubeId(url) {
@@ -308,21 +186,13 @@ function getYouTubeId(url) {
 }
 
 function renderTestimonialFallbacks() {
-  const videoTrack = document.getElementById("videoSliderTrack");
   const textTrack = document.getElementById("textSliderTrack");
-
-  if (videoTrack && videoTrack.children.length === 0) {
-    const fallbackVideos = [
-      { youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Client Video Review" },
-      { youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Brand Growth Story" },
-    ];
-    renderVideoSlider(fallbackVideos);
-  }
 
   if (textTrack && textTrack.children.length === 0) {
     const fallbackTexts = [
       { companyName: "Zenith Threads", reviewText: "The creative pipeline completely solved our fatigue issues. We scaled our Meta spend by 40% without drops in ROAS.", rating: 5, logo: { url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop" } },
       { companyName: "GlowKit", reviewText: "Working directly with the founders made a massive difference. No overhead, just pure performance creative that converts.", rating: 5, logo: { url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop" } },
+      { companyName: "Apex Aura", reviewText: "Unmatched speed and sharp compliance execution. Our ad fatigue problem disappeared overnight.", rating: 5, logo: { url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop" } },
     ];
     renderTextSlider(fallbackTexts);
   }
@@ -333,6 +203,7 @@ async function initTestimonials() {
     allVideoTestimonials { youtubeLink title }
     allTextTestimonials { companyName reviewText rating logo { url } }
     allLogoStrips { logoImage { url alt } }
+    allVoiceTestimonials { voiceNote { url } }
   }`;
 
   try {
@@ -345,23 +216,59 @@ async function initTestimonials() {
       },
       body: JSON.stringify({ query }),
     });
+    
     const { data, errors = null } = await response.json();
+    
     if (errors || !data) {
+      console.error("DatoCMS Request Failed Gracefully:", errors);
+      const videoWrapper = document.querySelector(".video-slider-wrapper");
+      if (videoWrapper) videoWrapper.style.display = "none";
       renderTestimonialFallbacks();
+      renderVoiceSlider([]);
       return;
     }
-    renderVideoSlider(data.allVideoTestimonials);
-    renderTextSlider(data.allTextTestimonials);
+    
+    if (!data.allVideoTestimonials || data.allVideoTestimonials.length === 0) {
+      const videoWrapper = document.querySelector(".video-slider-wrapper");
+      if (videoWrapper) videoWrapper.style.display = "none";
+    } else {
+      renderVideoSlider(data.allVideoTestimonials);
+    }
+    
+    if (data.allTextTestimonials && data.allTextTestimonials.length > 0) {
+      renderTextSlider(data.allTextTestimonials);
+    } else {
+      renderTestimonialFallbacks();
+    }
+    
     renderLogoMarquee(data.allLogoStrips);
+    renderVoiceSlider(data.allVoiceTestimonials);
+    
   } catch (err) {
+    console.error("DatoCMS Request Failed Gracefully:", err);
+    const videoWrapper = document.querySelector(".video-slider-wrapper");
+    if (videoWrapper) videoWrapper.style.display = "none";
     renderTestimonialFallbacks();
+    renderVoiceSlider([]);
   }
 }
 
 function renderVideoSlider(videos) {
   const track = document.getElementById("videoSliderTrack");
+  const wrapper = document.querySelector(".video-slider-wrapper");
   if (!track || !videos || !videos.length) return;
-  const items = [...videos, ...videos, ...videos];
+
+  const shouldActivateSlider = videos.length > 2;
+  const items = shouldActivateSlider ? [...videos, ...videos, ...videos] : videos;
+
+  if (wrapper) {
+    if (!shouldActivateSlider) {
+      wrapper.classList.add("slider-disabled");
+    } else {
+      wrapper.classList.remove("slider-disabled");
+    }
+  }
+
   track.innerHTML = items
     .map((vid) => {
       const videoId = getYouTubeId(vid.youtubeLink);
@@ -377,7 +284,10 @@ function renderVideoSlider(videos) {
       </div>`;
     })
     .join("");
-  setupSliderDragging(document.querySelector(".video-slider-wrapper"), track);
+
+  if (shouldActivateSlider) {
+    setupSliderDragging(wrapper, track);
+  }
 }
 
 window.handleVideoPlay = function (container, videoId) {
@@ -386,8 +296,20 @@ window.handleVideoPlay = function (container, videoId) {
 
 function renderTextSlider(testimonials) {
   const track = document.getElementById("textSliderTrack");
+  const wrapper = document.querySelector(".text-slider-wrapper");
   if (!track || !testimonials || !testimonials.length) return;
-  const items = [...testimonials, ...testimonials, ...testimonials];
+
+  const shouldActivateSlider = testimonials.length > 3;
+  const items = shouldActivateSlider ? [...testimonials, ...testimonials, ...testimonials] : testimonials;
+
+  if (wrapper) {
+    if (!shouldActivateSlider) {
+      wrapper.classList.add("slider-disabled");
+    } else {
+      wrapper.classList.remove("slider-disabled");
+    }
+  }
+
   track.innerHTML = items
     .map((t) => {
       const targetRating = typeof t.rating === "number" ? t.rating : 5;
@@ -407,7 +329,63 @@ function renderTextSlider(testimonials) {
       </div>`;
     })
     .join("");
-  setupSliderDragging(document.querySelector(".text-slider-wrapper"), track);
+
+  if (shouldActivateSlider) {
+    setupSliderDragging(wrapper, track);
+  }
+}
+
+function renderVoiceSlider(voiceNotes) {
+  const track = document.getElementById("voiceSliderTrack");
+  const wrapper = document.querySelector(".voice-slider-wrapper");
+
+  if (!track || !voiceNotes || !voiceNotes.length) {
+    if (wrapper) wrapper.style.display = "none";
+    return;
+  }
+
+  if (wrapper) wrapper.style.display = "block";
+
+  const shouldActivateSlider = voiceNotes.length > 3;
+  const items = shouldActivateSlider ? [...voiceNotes, ...voiceNotes, ...voiceNotes] : voiceNotes;
+
+  if (wrapper) {
+    if (!shouldActivateSlider) {
+      wrapper.classList.add("slider-disabled");
+    } else {
+      wrapper.classList.remove("slider-disabled");
+    }
+  }
+
+  track.innerHTML = items
+    .map((v) => {
+      const audioUrl = v.voiceNote?.url || "";
+      return `
+      <div class="glass-card glass-card--ecom pad voice-card">
+        <div class="card-grid-texture"></div>
+        <div class="voice-card__header">
+          <div class="icon-badge" style="margin-bottom: 0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+              <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
+              <line x1="12" x2="12" y1="19" y2="22"></line>
+            </svg>
+          </div>
+          <div>
+            <h4 style="margin:0; font-size:1rem;">Voice Note Testimonial</h4>
+            <span class="testimonial-card__author" style="margin:0; font-size:0.85rem; color: var(--text-muted);">Partner Brand Memo</span>
+          </div>
+        </div>
+        <div class="voice-card__player" style="margin-top: 1.5rem;">
+          <audio src="${audioUrl}" controls style="width: 100%; border-radius: var(--radius-pill); background: rgba(0, 0, 0, 0.2);"></audio>
+        </div>
+      </div>`;
+    })
+    .join("");
+
+  if (shouldActivateSlider) {
+    setupSliderDragging(wrapper, track);
+  }
 }
 
 function renderLogoMarquee(logoStrips) {
@@ -430,7 +408,6 @@ function renderLogoMarquee(logoStrips) {
   track.innerHTML += track.innerHTML;
 }
 
-// Drag loop handling for testimonials sliders
 function setupSliderDragging(wrapper, track) {
   if (!wrapper || !track) return;
   let currentX = 0,
@@ -446,7 +423,6 @@ function setupSliderDragging(wrapper, track) {
     return track.scrollWidth / 3;
   }
 
-  // Pre-position track at Set 2 so users can drag left immediately
   function initPosition() {
     const setWidth = getSetWidth();
     if (setWidth > 0) {

@@ -4,13 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <script>
-      // Flags genuinely low-power devices (low RAM / few CPU cores + touch input)
-      // so we can skip GPU-costly live backdrop-blur on the fixed nav for THEM only.
-      // iPhones and capable Android phones/desktops are left completely untouched.
       (function () {
         try {
           var nav = navigator;
-          var mem = nav.deviceMemory; // only exposed by Chromium (Android), undefined on iOS/Safari
+          var mem = nav.deviceMemory;
           var cores = nav.hardwareConcurrency || 8;
           var coarse = window.matchMedia && matchMedia("(pointer: coarse)").matches;
           var saveData = nav.connection && nav.connection.saveData;
@@ -78,7 +75,6 @@
             <a href="#sounds-familiar" class="nav__link">Sounds familiar</a>
             <a href="#model" class="nav__link">The model</a>
             <a href="#process" class="nav__link">Process</a>
-            <!-- Soft deleted Results nav link -->
             <a href="#results" class="nav__link" style="display: none !important;" aria-hidden="true">Results</a>
             <a href="#faq" class="nav__link">FAQ</a>
             <button type="button" class="btn btn--gold btn--small nav__cta" onclick="openCalendlyPopup(); return false;">Book a call</button>
@@ -87,10 +83,8 @@
       </header>
 
       <main id="top">
-        <!-- SECTION 1: HERO -->
         <section class="hero" id="hero">
           <div class="hero__inner">
-            <!-- Hero logo image removed per instructions -->
             <p class="eyebrow" data-reveal style="margin-top: 4rem;">For ecommerce brands spending on Meta every day</p>
             <h1 class="hero__headline" data-reveal>We eat when you eat.</h1>
             <p class="hero__sub" data-reveal>Our offer is simple: we make our money from the revenue we generate for your brand. The small base only covers production. Everything else, we have to earn — so we don't get paid to stay busy, we get paid to grow your numbers.</p>
@@ -109,7 +103,6 @@
                 </div>
               </div>
             </div>
-            <!-- SECTION 2: UNDER THE VIDEO -->
             <p class="hero__trust">No bloated freelancer network. Three brothers, one room, working on your brand at the same time — that's how the ads come out sharp and come out fast.</p>
             <div class="scroll-cue" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -133,7 +126,6 @@
           </div>
         </section>
 
-        <!-- SECTION 3: WHAT WE DO -->
         <section class="section" id="what-we-do">
           <div class="section__head">
             <p class="eyebrow">What we do</p>
@@ -166,7 +158,6 @@
           </div>
         </section>
 
-        <!-- SECTION 4: SOUNDS FAMILIAR? -->
         <section class="section" id="sounds-familiar">
           <div class="section__head">
             <p class="eyebrow">SOUND FAMILIAR?</p>
@@ -189,7 +180,6 @@
               <h3 style="color: var(--bleed-red); margin-bottom: 0.8rem;">You — the bottleneck</h3>
               <p>So the strategy still lives in your head. The edit happens somewhere else. And nobody in the chain feels the weight of whether the ad performs the way you do. The second you stop spelling out every detail, quality falls off a cliff — because you're the strategist, the feedback loop, and the quality control.</p>
             </div>
-            <!-- Long highlighted horizontal card spanning entire section per instruction -->
             <div class="glass-card glass-card--ecom glass-card--bleed-cyan masonry-item item--wide" style="grid-column: span 12; border: 1px solid var(--bleed-cyan) !important; background: rgba(27, 76, 242, 0.15) !important; text-align: center; align-items: center; padding: 3.5rem 2.5rem;">
               <div class="card-grid-texture"></div>
               <span class="metric-pill" style="margin-bottom: 1rem; border-color: var(--bleed-cyan); color: var(--bleed-cyan);">THE CORE ISSUE</span>
@@ -199,7 +189,6 @@
           </div>
         </section>
 
-        <!-- SECTION 5: THE COST OF WAITING -->
         <section class="section">
           <div class="section__head">
             <p class="eyebrow">The cost of waiting</p>
@@ -243,7 +232,6 @@
           </div>
         </section>
 
-        <!-- SECTION 6: THE OFFER / THE MODEL -->
         <section class="section" id="model">
           <div class="section__head">
             <p class="eyebrow">The offer</p>
@@ -276,7 +264,6 @@
           </div>
         </section>
 
-        <!-- PROCESS SECTION (Kept intact per instructions: everything not mentioned remains) -->
         <section class="section" id="process">
           <div class="section__head">
             <p class="eyebrow">The process</p>
@@ -329,7 +316,6 @@
           </div>
         </section>
 
-        <!-- SOFT DELETED RESULTS SECTION (Code untouched, hidden from DOM rendering) -->
         <section class="section" id="results" hidden style="display: none !important;" aria-hidden="true">
           <div class="section__head">
             <p class="eyebrow">Results</p>
@@ -356,7 +342,6 @@
           </div>
         </section>
 
-        <!-- TESTIMONIALS (Kept intact per instructions) -->
         <section class="section" id="testimonials">
           <div class="section__head">
             <p class="eyebrow">What clients say</p>
@@ -368,11 +353,11 @@
           <div class="slider-wrapper text-slider-wrapper">
             <div class="slider-track" id="textSliderTrack"></div>
           </div>
+          <div class="slider-wrapper voice-slider-wrapper" style="display: none;">
+            <div class="slider-track" id="voiceSliderTrack"></div>
+          </div>
         </section>
 
-        <!-- WHAT'S INCLUDED SECTION (#offer) HARD REMOVED PER INSTRUCTIONS -->
-
-        <!-- SECTION 7: MEET THE FOUNDER -->
         <section class="section" id="team">
           <div class="section__head">
             <p class="eyebrow">Meet the founder</p>
@@ -394,7 +379,6 @@
           </div>
         </section>
 
-        <!-- SECTION 8: FAQ -->
         <section class="section" id="faq">
           <div class="section__head">
             <p class="eyebrow">FAQ</p>
@@ -404,7 +388,7 @@
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
                 <span>How are you different from the agency I just fired?</span>
-                <span class="accordion__icon" aria-hidden="true"></span>
+                <span class="accordion__icon" aria-expanded="false" type="button"></span>
               </button>
               <div class="accordion__panel">
                 <div>
@@ -415,7 +399,7 @@
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
                 <span>What exactly does the commission come from?</span>
-                <span class="accordion__icon" aria-hidden="true"></span>
+                <span class="accordion__icon" aria-expanded="false" type="button"></span>
               </button>
               <div class="accordion__panel">
                 <div>
@@ -426,7 +410,7 @@
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
                 <span>Can you show me results from past brands?</span>
-                <span class="accordion__icon" aria-hidden="true"></span>
+                <span class="accordion__icon" aria-expanded="false" type="button"></span>
               </button>
               <div class="accordion__panel">
                 <div>
@@ -437,7 +421,7 @@
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
                 <span>How many ads do I actually get?</span>
-                <span class="accordion__icon" aria-hidden="true"></span>
+                <span class="accordion__icon" aria-expanded="false" type="button"></span>
               </button>
               <div class="accordion__panel">
                 <div>
@@ -448,7 +432,7 @@
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
                 <span>Do you run the ads too, or just make them?</span>
-                <span class="accordion__icon" aria-hidden="true"></span>
+                <span class="accordion__icon" aria-expanded="false" type="button"></span>
               </button>
               <div class="accordion__panel">
                 <div>
@@ -459,7 +443,7 @@
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
                 <span>What if the ads don't perform?</span>
-                <span class="accordion__icon" aria-hidden="true"></span>
+                <span class="accordion__icon" aria-expanded="false" type="button"></span>
               </button>
               <div class="accordion__panel">
                 <div>
@@ -470,7 +454,7 @@
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
                 <span>Am I locked into a contract?</span>
-                <span class="accordion__icon" aria-hidden="true"></span>
+                <span class="accordion__icon" aria-expanded="false" type="button"></span>
               </button>
               <div class="accordion__panel">
                 <div>
@@ -481,7 +465,7 @@
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
                 <span>Who is this NOT for?</span>
-                <span class="accordion__icon" aria-hidden="true"></span>
+                <span class="accordion__icon" aria-expanded="false" type="button"></span>
               </button>
               <div class="accordion__panel">
                 <div>
@@ -492,7 +476,6 @@
           </div>
         </section>
 
-        <!-- SECTION 9: FINAL CALL-TO-ACTION (NO QUIZ - REPLACED WITH CALENDLY POPUP BUTTON) -->
         <section class="section section--final" id="book">
           <div class="section__head">
             <p class="eyebrow">Get started</p>
@@ -524,7 +507,6 @@
             <a href="#sounds-familiar">Sounds familiar</a>
             <a href="#model">The model</a>
             <a href="#process">Process</a>
-            <!-- Soft deleted Results footer link -->
             <a href="#results" style="display: none !important;" aria-hidden="true">Results</a>
             <a href="#faq">FAQ</a>
           </nav>
