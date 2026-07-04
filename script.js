@@ -73,8 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
       lastRenderTime = currentTime - (delta % frameInterval);
 
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = isMobileDevice ? "rgba(255, 255, 255, 0.95)" : "rgba(245, 247, 255, 0.75)";
-
+      ctx.fillStyle = isMobileDevice ? "rgba(255, 255, 255, 1.0)" : "rgba(245, 247, 255, 0.75)";
       const len = stars.length;
       const sizeMultiplier = 1.5; // Fixed to match standard PC size scaling multiplier
       for (let i = 0; i < len; i++) {
