@@ -1488,29 +1488,70 @@ main {
 /* Hardware performance overrides for older/mobile screens */
 
 /*
-  The fixed nav pill is the one element that keeps its backdrop-filter at every
-  screen size (unlike every other glass-card above, which already drops blur on
-  narrow viewports). Because it's position:fixed, the browser must live-resample
-  and blur whatever scrolls underneath it on every single scroll frame. Desktop
-  and iPhone compositors handle this fine; weaker Android GPUs do not, and this
-  is the single biggest cause of scroll jank on those devices. We only remove it
-  for devices flagged low-power by the capability check in index.html, and
-  compensate with a denser solid tint so the pill still reads as dark glass.
-*/
-html.gpu-lite .nav.glass-card {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-html.gpu-lite .nav.glass-card::before {
-  background: rgba(3, 4, 14, 0.86);
-}
+  Everything in this block targets ROOT CAUSES of mobile scroll jank, not just
+  symptoms, and applies deterministically by viewport width (not fragile device
+  sniffing) so it reliably fires on every phone regardless of browser/API support.
 
+  1) The fixed nav pill was the only element still using a live backdrop-filter
+     at all widths. Position:fixed + backdrop-filter means the browser re-blurs
+     everything scrolling underneath it on every scroll frame — expensive on
+     weak GPUs. Removed on mobile, replaced with a solid tint.
+  2) The two full-viewport background glows use `mix-blend-mode: screen` +
+     large-radius `filter: blur()`. Blend modes force a non-trivial compositing
+     path on budget GPUs (often falling back to software), and large blur
+     radii are costly in proportion to their pixel area — this one covers most
+     of the screen. Since the backdrop here is near-black, `screen` blending
+     is visually almost identical to normal alpha blending, so we drop the
+     blend mode and shrink the blur radius with negligible visual difference.
+  3) The repeating grid-line texture drawn on every single card is a cheap
+     effect individually, but multiplied by every card on the page it adds
+     real paint cost. Hidden on mobile — imperceptible at phone viewing distance.
+  4) Box-shadow blur radius cost scales with radius; shrunk on mobile so every
+     card is cheaper to rasterize without looking noticeably flatter.
+*/
 @media (max-width: 960px), (prefers-reduced-motion: reduce) {
 .glass-card:not(.nav),
   .glass-card--ecom,
   .accordion__item, .play-btn {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+
+  .nav.glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .nav.glass-card::before {
+    background: rgba(3, 4, 14, 0.88);
+  }
+
+  .glass-card--ecom {
+    box-shadow:
+      0 10px 20px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0px rgba(255, 255, 255, 0.05) !important;
+  }
+  .accordion__item {
+    box-shadow:
+      0 10px 20px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0px rgba(255, 255, 255, 0.04);
+  }
+  .glass-card {
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.04),
+      0 6px 14px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-grid-texture {
+    display: none;
+  }
+
+  .god-ray {
+    mix-blend-mode: normal;
+    filter: blur(28px);
+  }
+  .center-glow {
+    mix-blend-mode: normal;
+    filter: blur(20px);
   }
 
   .grain {
@@ -1554,6 +1595,27 @@ html.gpu-lite .nav.glass-card::before {
     align-items: start;
     gap: 1.2rem;
   }
+}
+
+/* Belt-and-suspenders: same treatment for wide-viewport devices (tablets,
+   budget Chromebooks) that the JS capability check in index.html still
+   flags as low-power despite a screen wider than 960px. */
+html.gpu-lite .nav.glass-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.gpu-lite .nav.glass-card::before {
+  background: rgba(3, 4, 14, 0.88);
+}
+html.gpu-lite .glass-card,
+html.gpu-lite .glass-card--ecom,
+html.gpu-lite .accordion__item {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.gpu-lite .god-ray,
+html.gpu-lite .center-glow {
+  mix-blend-mode: normal;
 }
 
 @media (max-width: 860px) {

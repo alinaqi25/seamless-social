@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const viewportSurfaceArea = width * height;
       const targetStarDensityFactor = 8500; 
 
-      const mobileCap = isLowPowerDevice ? 60 : 110;
+      const mobileCap = isLowPowerDevice ? 45 : 70;
       let adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), isMobileDevice ? mobileCap : 140);
       if (prefersReducedMotion) adjustedCount = Math.floor(adjustedCount * 0.2);
 
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initCanvas();
 
-    const frameInterval = isLowPowerDevice ? 1000 / 24 : isMobileDevice ? 1000 / 30 : 1000 / 60;
+    const frameInterval = isLowPowerDevice ? 1000 / 20 : isMobileDevice ? 1000 / 24 : 1000 / 60;
     let lastRenderTime = performance.now();
 
     const animateStars = (currentTime) => {
