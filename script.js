@@ -41,8 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
           x: Math.random() * width,
           y: Math.random() * height,
           radius: Math.random() * (isMobileDevice ? 0.9 : 1.1),
-          vx: (Math.random() - 0.5) * 0.12,
-          vy: (Math.random() - 0.5) * 0.12,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: (Math.random() - 0.5) * 0.2,
         });
       }
     };

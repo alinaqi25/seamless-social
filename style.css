@@ -170,7 +170,7 @@ svg {
   background: conic-gradient(
     from 180deg at 50% 0%,
     transparent 0deg,
-    rgba(124, 140, 255, 0.35) 15deg,
+    #1048ff8a 15deg,
     transparent 40deg
   );
   will-change: transform;
@@ -193,7 +193,7 @@ svg {
   transform: translateX(-50%) translate3d(0, 0, 0);
   background: radial-gradient(
     closest-side,
-    rgba(27, 76, 242, 0.22),
+    #1b4cf238,
     transparent 80%
   );
   filter: blur(40px);
@@ -296,7 +296,7 @@ svg {
   background-size: 18px 18px;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.75;
+  opacity: 1;
 }
 
 #offer .glass-card::after {
@@ -402,7 +402,7 @@ svg {
   padding: 2.5rem 2.2rem;
   display: flex;
   flex-direction: column;
-  justify-content: top;
+  justify-content: flex-start;
 }
 
 .bento-grid--waiting {
@@ -701,7 +701,6 @@ svg {
   gap: 12px;
 }
 
-/* UPDATED LOCATION: Navbar Expand Toggle Mechanics */
 .nav__toggle {
   display: none;
   color: var(--text-primary);
@@ -1481,10 +1480,15 @@ main {
 }
 
 /* Hardware performance overrides for older/mobile screens */
+
 @media (max-width: 960px), (prefers-reduced-motion: reduce) {
-  .glass-card,
+.glass-card:not(.nav),
   .glass-card--ecom,
-  .accordion__item,
+  .accordion__item {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
   .play-btn {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -1495,11 +1499,6 @@ main {
     display: none;
   }
 
-  .god-ray,
-  .center-glow {
-    filter: blur(28px);
-    opacity: 0.1;
-  }
 
   .unified-system {
     grid-template-columns: 1fr;
@@ -1540,7 +1539,6 @@ main {
 }
 
 @media (max-width: 860px) {
-  /* UPDATED LOCATION: Core Mobile Layout Toggle Alignment */
   .nav__toggle {
     display: flex;
   }
