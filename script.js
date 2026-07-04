@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: Math.random() * (isMobileDevice ? 0.9 : 1.1),
+          radius: isMobileDevice ? 0.9 + Math.random() * 0.9 : Math.random() * 1.1,
           vx: (Math.random() - 0.5) * 0.2,
           vy: (Math.random() - 0.5) * 0.2,
         });
@@ -73,9 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
       lastRenderTime = currentTime - (delta % frameInterval);
 
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "rgba(245, 247, 255, 0.75)";
+      ctx.fillStyle = isMobileDevice ? "rgba(255, 255, 255, 0.95)" : "rgba(245, 247, 255, 0.75)";
 
       const len = stars.length;
+      const sizeMultiplier = isMobileDevice ? 2 : 1.5;
       for (let i = 0; i < len; i++) {
         const star = stars[i];
 
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (star.y < 0) star.y = height;
         if (star.y > height) star.y = 0;
 
-        ctx.fillRect(star.x, star.y, star.radius * 1.5, star.radius * 1.5);
+        ctx.fillRect(star.x, star.y, star.radius * sizeMultiplier, star.radius * sizeMultiplier);
       }
     };
     requestAnimationFrame(animateStars);

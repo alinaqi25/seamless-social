@@ -159,6 +159,11 @@ svg {
   height: 100%;
   opacity: 0.8;
 }
+@media (max-width: 768px) {
+  #stardust {
+    opacity: 1;
+  }
+}
 .god-ray {
   position: absolute;
   top: -30%;
@@ -170,7 +175,7 @@ svg {
   background: conic-gradient(
     from 180deg at 50% 0%,
     transparent 0deg,
-    #1048ff8a 15deg,
+    #1048ffa2 15deg,
     transparent 40deg
   );
   will-change: transform;
@@ -691,9 +696,11 @@ svg {
   padding: 1rem 0.9rem 1rem 1.5rem;
   border-radius: var(--radius-pill);
   overflow: visible !important;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 .nav::before {
-  background: rgba(1, 2, 8, 0.65);
+  background: rgba(1, 2, 8, 0.42);
 }
 .nav__brand {
   display: flex;
