@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: isMobileDevice ? 0.9 + Math.random() * 0.9 : Math.random() * 1.1,
+          radius: Math.random() * 1.1, 
           vx: (Math.random() - 0.5) * 0.2,
           vy: (Math.random() - 0.5) * 0.2,
         });
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.fillStyle = isMobileDevice ? "rgba(255, 255, 255, 0.95)" : "rgba(245, 247, 255, 0.75)";
 
       const len = stars.length;
-      const sizeMultiplier = isMobileDevice ? 2 : 1.5;
+      const sizeMultiplier = 1.5; // Fixed to match standard PC size scaling multiplier
       for (let i = 0; i < len; i++) {
         const star = stars[i];
 
