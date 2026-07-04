@@ -24,10 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobileDevice = window.innerWidth < 768;
+    const isLowPowerDevice = document.documentElement.classList.contains("gpu-lite");
 
     const initCanvas = () => {
-      // Get the display pixel ratio (Retina/High-DPI factor for mobile screens)
-      const dpr = window.devicePixelRatio || 1;
+      // Get the display pixel ratio (Retina/High-DPI factor for mobile screens),
+      // capped at 2x — stars are ~1px dots, so 3x+ backing stores just burn fill-rate
+      // for zero visible sharpness gain.
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
 
@@ -41,7 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const viewportSurfaceArea = width * height;
       const targetStarDensityFactor = 8500; 
 
-      let adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), isMobileDevice ? 110 : 140);
+      const mobileCap = isLowPowerDevice ? 60 : 110;
+      let adjustedCount = Math.min(Math.floor(viewportSurfaceArea / targetStarDensityFactor), isMobileDevice ? mobileCap : 140);
       if (prefersReducedMotion) adjustedCount = Math.floor(adjustedCount * 0.2);
 
       stars.length = 0;
@@ -50,8 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
           x: Math.random() * width,
           y: Math.random() * height,
           radius: Math.random() * 1.1,
-          vx: (Math.random() - 0.5) * 0.2,
-          vy: (Math.random() - 0.5) * 0.2,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
         });
       }
     };
@@ -68,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initCanvas();
 
-    const frameInterval = isMobileDevice ? 1000 / 30 : 1000 / 60;
+    const frameInterval = isLowPowerDevice ? 1000 / 24 : isMobileDevice ? 1000 / 30 : 1000 / 60;
     let lastRenderTime = performance.now();
 
     const animateStars = (currentTime) => {

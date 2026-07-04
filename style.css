@@ -178,7 +178,6 @@ svg {
     #1048ffa2 15deg,
     transparent 40deg
   );
-  will-change: transform;
 }
 .god-ray--left {
   left: -10vw;
@@ -1487,6 +1486,24 @@ main {
 }
 
 /* Hardware performance overrides for older/mobile screens */
+
+/*
+  The fixed nav pill is the one element that keeps its backdrop-filter at every
+  screen size (unlike every other glass-card above, which already drops blur on
+  narrow viewports). Because it's position:fixed, the browser must live-resample
+  and blur whatever scrolls underneath it on every single scroll frame. Desktop
+  and iPhone compositors handle this fine; weaker Android GPUs do not, and this
+  is the single biggest cause of scroll jank on those devices. We only remove it
+  for devices flagged low-power by the capability check in index.html, and
+  compensate with a denser solid tint so the pill still reads as dark glass.
+*/
+html.gpu-lite .nav.glass-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.gpu-lite .nav.glass-card::before {
+  background: rgba(3, 4, 14, 0.86);
+}
 
 @media (max-width: 960px), (prefers-reduced-motion: reduce) {
 .glass-card:not(.nav),

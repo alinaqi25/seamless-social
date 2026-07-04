@@ -3,6 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script>
+      // Flags genuinely low-power devices (low RAM / few CPU cores + touch input)
+      // so we can skip GPU-costly live backdrop-blur on the fixed nav for THEM only.
+      // iPhones and capable Android phones/desktops are left completely untouched.
+      (function () {
+        try {
+          var nav = navigator;
+          var mem = nav.deviceMemory; // only exposed by Chromium (Android), undefined on iOS/Safari
+          var cores = nav.hardwareConcurrency || 8;
+          var coarse = window.matchMedia && matchMedia("(pointer: coarse)").matches;
+          var saveData = nav.connection && nav.connection.saveData;
+          var isLowPower = coarse && ((typeof mem === "number" && mem <= 4) || cores <= 4 || saveData);
+          if (isLowPower) document.documentElement.classList.add("gpu-lite");
+        } catch (e) {}
+      })();
+    </script>
     <title>Seamless Social — Performance Ad Creative for Ecommerce Brands</title>
     <meta name="description" content="We research your buyers, build ads that stop the scroll, and keep the creative pipeline full — for ecommerce founders spending $500k–$5M a year on Meta ads." />
 
