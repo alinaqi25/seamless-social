@@ -591,6 +591,7 @@ svg {
   aspect-ratio: 1 / 1;
   border-radius: 10px;
   flex-shrink: 0;
+  background: transparent !important;
 }
 .asset-slot--wordmark {
   height: 16px;
