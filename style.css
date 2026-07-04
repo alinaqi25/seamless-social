@@ -693,10 +693,12 @@ svg {
   width: 100%;
   max-width: 940px;
   padding: 1rem 0.9rem 1rem 1.5rem;
+  background-color:#3054ca42;
   border-radius: var(--radius-pill);
   overflow: visible !important;
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(19px);
+  -webkit-backdrop-filter: blur(19px);
+  
 }
 .nav::before {
   background: rgba(1, 2, 8, 0.42);

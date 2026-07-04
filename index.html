@@ -26,6 +26,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=500;600;700&family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
     <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
     <script type="text/javascript">
       window.handleAssetError = function (img) {
@@ -33,6 +34,13 @@
         if (slot) {
           slot.classList.add("asset-slot--empty");
           img.style.display = "none";
+        }
+      };
+      window.openCalendlyPopup = function() {
+        if (window.Calendly) {
+          window.Calendly.initPopupWidget({ url: 'https://calendly.com/seamlesssocial2/30min' });
+        } else {
+          window.open('https://calendly.com/seamlesssocial2/30min', '_blank');
         }
       };
     </script>
@@ -67,26 +75,27 @@
 
           <div class="nav__links" id="navLinks">
             <a href="#what-we-do" class="nav__link">What we do</a>
+            <a href="#sounds-familiar" class="nav__link">Sounds familiar</a>
             <a href="#model" class="nav__link">The model</a>
             <a href="#process" class="nav__link">Process</a>
-            <a href="#results" class="nav__link">Results</a>
+            <!-- Soft deleted Results nav link -->
+            <a href="#results" class="nav__link" style="display: none !important;" aria-hidden="true">Results</a>
             <a href="#faq" class="nav__link">FAQ</a>
-            <a href="#book" class="btn btn--gold btn--small nav__cta" data-booking-link>Book a call</a>
+            <button type="button" class="btn btn--gold btn--small nav__cta" onclick="openCalendlyPopup(); return false;">Book a call</button>
           </div>
         </nav>
       </header>
 
       <main id="top">
+        <!-- SECTION 1: HERO -->
         <section class="hero" id="hero">
           <div class="hero__inner">
-            <span class="asset-slot asset-slot--wordmark asset-slot--wordmark-hero" data-label="SEAMLESS SOCIAL" data-reveal>
-              <img src="assets/wordmark.png" alt="Seamless Social" onerror="handleAssetError(this)" loading="eager" decoding="async" />
-            </span>
-            <p class="eyebrow" data-reveal>For ecommerce brands spending on Meta every day</p>
-            <h1 class="hero__headline" data-reveal>Your creative fatigues.<br />Our pipeline doesn't.</h1>
-            <p class="hero__sub" data-reveal>We research your buyers, build ads made to stop the scroll, and keep new angles ready before the old ones die out — built for ecommerce founders doing $500k&ndash;$5M a year who run Meta ads daily.</p>
+            <!-- Hero logo image removed per instructions -->
+            <p class="eyebrow" data-reveal style="margin-top: 4rem;">For ecommerce brands spending on Meta every day</p>
+            <h1 class="hero__headline" data-reveal>We eat when you eat.</h1>
+            <p class="hero__sub" data-reveal>Our offer is simple: we make our money from the revenue we generate for your brand. The small base only covers production. Everything else, we have to earn — so we don't get paid to stay busy, we get paid to grow your numbers.</p>
             <div class="hero__actions" data-reveal>
-              <a href="#book" class="btn btn--primary btn--large" data-booking-link>Book a call</a>
+              <button type="button" class="btn btn--primary btn--large" onclick="openCalendlyPopup(); return false;">Book a call</button>
             </div>
             <div class="hero__video glass-card">
               <div class="hero__video-frame" id="heroVideoFrame" data-video-slot>
@@ -100,7 +109,8 @@
                 </div>
               </div>
             </div>
-            <p class="hero__trust">No middlemen. No freelancer network. Three operators who spent 2+ years scaling an 8-figure ecommerce brand from the inside.</p>
+            <!-- SECTION 2: UNDER THE VIDEO -->
+            <p class="hero__trust">No bloated freelancer network. Three brothers, one room, working on your brand at the same time — that's how the ads come out sharp and come out fast.</p>
             <div class="scroll-cue" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -123,12 +133,14 @@
           </div>
         </section>
 
+        <!-- SECTION 3: WHAT WE DO -->
         <section class="section" id="what-we-do">
           <div class="section__head">
             <p class="eyebrow">What we do</p>
-            <h2>Research the buyer. Build the ads. Keep the pipeline full.</h2>
+            <h2>High-intent ads that make you print.</h2>
+            <p class="section__sub">Every ad we ship exists for a reason. No filler, no volume-for-volume's-sake 3-4 ads a week, each one built with genuine intent and a real shot at scale.</p>
           </div>
-          <div class="unified-system">
+          <div class="unified-system" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
             <div class="system-panel glass-card glass-card--ecom glass-card--bleed-cyan">
               <div class="card-grid-texture"></div>
               <div class="panel-header">
@@ -136,65 +148,58 @@
                 <span class="flow-arrow">>>></span>
               </div>
               <div class="panel-body">
-                <h3>Research</h3>
-                <p>We research the brand&rsquo;s customers deeply — reviews, competitors, what buyers actually say — to find the angles that make people buy.</p>
+                <h3>Research — every day, never stops</h3>
+                <p>Before a single concept, we go deep: your brand, your buyers, your competitors' ads, and what's already working in the niche. And it doesn't end after week one — research runs every day, so every new concept is built on what the market is doing right now, not on a brief from three months ago.</p>
               </div>
             </div>
             <div class="system-panel glass-card glass-card--ecom glass-card--bleed-cyan">
               <div class="card-grid-texture"></div>
               <div class="panel-header">
                 <span class="metric-pill">Core Engine 02</span>
-                <span class="flow-arrow">>>></span>
-              </div>
-              <div class="panel-body">
-                <h3>Build</h3>
-                <p>We write and edit the ads based on that research, built to stop the scroll and drive a sale.</p>
-              </div>
-            </div>
-            <div class="system-panel glass-card glass-card--ecom glass-card--bleed-cyan">
-              <div class="card-grid-texture"></div>
-              <div class="panel-header">
-                <span class="metric-pill">Core Engine 03</span>
                 <span class="flow-arrow">SYSTEM READY</span>
               </div>
               <div class="panel-body">
-                <h3>Sustain</h3>
-                <p>We keep the creative pipeline full — when one ad stops working, the next one is already ready, so you&rsquo;re never scrambling.</p>
+                <h3>Build — written and edited under one roof</h3>
+                <p>We write and edit the ads straight from that research. The strategist and the editor share the same room and the same head, so nothing gets lost in translation. Every ad is judged on one thing: does it have maximum potential to scale.</p>
               </div>
             </div>
           </div>
         </section>
 
-        <section class="section">
+        <!-- SECTION 4: SOUNDS FAMILIAR? -->
+        <section class="section" id="sounds-familiar">
           <div class="section__head">
-            <p class="eyebrow">Sound familiar?</p>
-            <h2>You&rsquo;ve heard these before.</h2>
+            <p class="eyebrow">SOUND FAMILIAR?</p>
+            <h2>Be honest — this is your life right now.</h2>
+            <p class="section__sub">You've got a good product. You're spending real money every day. And somehow the hardest part of your week is still just getting ads made that actually work.</p>
           </div>
           <div class="editorial-masonry">
-            <blockquote class="glass-card glass-card--ecom glass-card--bleed-red masonry-item item--large">
+            <div class="glass-card glass-card--ecom glass-card--bleed-red masonry-item item--large" style="grid-column: span 6;">
               <div class="card-grid-texture"></div>
-              <svg class="quote-mark" width="28" height="22" viewBox="0 0 28 22" fill="none" aria-hidden="true">
-                <path d="M0 22V13.2C0 8.8 1.1 5.5 3.3 3.3 5.5 1.1 8.4 0 12 0v4.4c-2 0-3.5.6-4.5 1.8-1 1.1-1.5 2.6-1.5 4.4h6V22H0zm16 0V13.2c0-4.4 1.1-7.7 3.3-9.9C21.5 1.1 24.4 0 28 0v4.4c-2 0-3.5.6-4.5 1.8-1 1.1-1.5 2.6-1.5 4.4h6V22H16z" fill="currentColor" />
-              </svg>
-              <p>&ldquo;$5k a month and delivered no results.&rdquo;</p>
-            </blockquote>
-            <blockquote class="glass-card glass-card--ecom glass-card--bleed-red masonry-item item--tall">
+              <h3 style="color: var(--bleed-red); margin-bottom: 1rem;">The agency</h3>
+              <p>Five, eight grand a month — and what you're really paying for is a queue. Your brand sits in a pile with twenty others while your creative gets passed to freelancers you've never spoken to, who've never used your product and don't know why anyone buys it. You send feedback, you get "great point, we'll fix it" — and it comes back changed in every way except the one you asked for.</p>
+            </div>
+            <div class="glass-card glass-card--ecom glass-card--bleed-red masonry-item item--tall" style="grid-column: span 6;">
               <div class="card-grid-texture"></div>
-              <svg class="quote-mark" width="28" height="22" viewBox="0 0 28 22" fill="none" aria-hidden="true">
-                <path d="M0 22V13.2C0 8.8 1.1 5.5 3.3 3.3 5.5 1.1 8.4 0 12 0v4.4c-2 0-3.5.6-4.5 1.8-1 1.1-1.5 2.6-1.5 4.4h6V22H0zm16 0V13.2c0-4.4 1.1-7.7 3.3-9.9C21.5 1.1 24.4 0 28 0v4.4c-2 0-3.5.6-4.5 1.8-1 1.1-1.5 2.6-1.5 4.4h6V22H16z" fill="currentColor" />
-              </svg>
-              <p>&ldquo;The editor just executes — doesn&rsquo;t think.&rdquo;</p>
-            </blockquote>
-            <blockquote class="glass-card glass-card--ecom glass-card--bleed-red masonry-item item--wide">
+              <h3 style="color: var(--bleed-red); margin-bottom: 1rem;">The strategist &amp; the editor</h3>
+              <p>Maybe you've got a creative strategist. But they write briefs and disappear — no feedback loop to the editor on what's working and what's not. Two brains, never aligned on a single concept. And the editor thinks like an artist, not a marketer: the cuts are clean, it looks expensive... and it doesn't sell. Not their fault. Nobody ever taught them what makes a stranger stop and pull out a card.</p>
+            </div>
+            <div class="glass-card glass-card--ecom glass-card--bleed-red masonry-item item--wide" style="grid-column: span 12; text-align: left; align-items: flex-start;">
               <div class="card-grid-texture"></div>
-              <svg class="quote-mark" width="28" height="22" viewBox="0 0 28 22" fill="none" aria-hidden="true">
-                <path d="M0 22V13.2C0 8.8 1.1 5.5 3.3 3.3 5.5 1.1 8.4 0 12 0v4.4c-2 0-3.5.6-4.5 1.8-1 1.1-1.5 2.6-1.5 4.4h6V22H0zm16 0V13.2c0-4.4 1.1-7.7 3.3-9.9C21.5 1.1 24.4 0 28 0v4.4c-2 0-3.5.6-4.5 1.8-1 1.1-1.5 2.6-1.5 4.4h6V22H16z" fill="currentColor" />
-              </svg>
-              <p>&ldquo;Another &lsquo;strategist&rsquo; who never watched a single competitor&rsquo;s ad.&rdquo;</p>
-            </blockquote>
+              <h3 style="color: var(--bleed-red); margin-bottom: 0.8rem;">You — the bottleneck</h3>
+              <p>So the strategy still lives in your head. The edit happens somewhere else. And nobody in the chain feels the weight of whether the ad performs the way you do. The second you stop spelling out every detail, quality falls off a cliff — because you're the strategist, the feedback loop, and the quality control.</p>
+            </div>
+            <!-- Long highlighted horizontal card spanning entire section per instruction -->
+            <div class="glass-card glass-card--ecom glass-card--bleed-cyan masonry-item item--wide" style="grid-column: span 12; border: 1px solid var(--bleed-cyan) !important; background: rgba(27, 76, 242, 0.15) !important; text-align: center; align-items: center; padding: 3.5rem 2.5rem;">
+              <div class="card-grid-texture"></div>
+              <span class="metric-pill" style="margin-bottom: 1rem; border-color: var(--bleed-cyan); color: var(--bleed-cyan);">THE CORE ISSUE</span>
+              <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); color: var(--white); margin-bottom: 1rem;">Not talent — Alignment.</h3>
+              <p style="font-size: 1.25rem; max-width: 800px; color: var(--text-primary); margin: 0 auto;">That's the real problem. The people making your ads aren't in the same brain — so your vision gets watered down at every single handoff.</p>
+            </div>
           </div>
         </section>
 
+        <!-- SECTION 5: THE COST OF WAITING -->
         <section class="section">
           <div class="section__head">
             <p class="eyebrow">The cost of waiting</p>
@@ -209,7 +214,10 @@
                   <path d="M2 17L10 2l8 15H2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
                 </svg>
               </div>
-              <p>Your winners keep dying — and nothing&rsquo;s ready to replace them.</p>
+              <div>
+                <h3 style="margin-bottom: 0.5rem; color: var(--white);">A team of scattered brains</h3>
+                <p>Different people, different places, different mindsets — nobody working at the same time or toward the same purpose. That misalignment quietly costs you more than any invoice ever will: it's in every ad that ships half as sharp as it should be.</p>
+              </div>
             </div>
             <div class="glass-card glass-card--ecom glass-card--bleed-yellow bento-cell">
               <div class="card-grid-texture"></div>
@@ -218,7 +226,8 @@
                   <path d="M2 10h16M11 4l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </div>
-              <p>Wasted ad spend on creative that never should&rsquo;ve launched.</p>
+              <h3 style="margin-bottom: 0.5rem;">Money out, every month</h3>
+              <p>Agency retainer. Strategist fee. Editor's rate. Three separate bills for one broken chain — and none of them get cheaper when the ads underperform.</p>
             </div>
             <div class="glass-card glass-card--ecom glass-card--bleed-yellow bento-cell">
               <div class="card-grid-texture"></div>
@@ -228,18 +237,20 @@
                   <path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                 </svg>
               </div>
-              <p>You&rsquo;re scared to push more budget in because the pipeline can&rsquo;t keep up.</p>
+              <h3 style="margin-bottom: 0.5rem;">Winners with no successors</h3>
+              <p>Your best ad is fatiguing right now. Every winner dies in a few weeks — and if nothing's researched, written, and ready behind it, you'll be scrambling with real money while the account bleeds.</p>
             </div>
           </div>
         </section>
 
+        <!-- SECTION 6: THE OFFER / THE MODEL -->
         <section class="section" id="model">
           <div class="section__head">
-            <p class="eyebrow">The model</p>
+            <p class="eyebrow">The offer</p>
             <h2>Base + commission. Not a retainer factory.</h2>
           </div>
-          <div class="bento-grid bento-grid--model">
-            <div class="glass-card glass-card--ecom glass-card--bleed-blue bento-cell cell--hero">
+          <div class="bento-grid" style="grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));">
+            <div class="glass-card glass-card--ecom glass-card--bleed-blue bento-cell">
               <div class="card-grid-texture"></div>
               <div class="icon-badge">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -247,18 +258,7 @@
                 </svg>
               </div>
               <h3>Base + commission</h3>
-              <p>A small base fee covers production. The rest of our pay grows as your creative scales in spend and revenue — not a flat cheque we collect whether the ads work or not.</p>
-            </div>
-            <div class="glass-card glass-card--ecom glass-card--bleed-blue bento-cell">
-              <div class="card-grid-texture"></div>
-              <div class="icon-badge">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5" />
-                  <path d="M13.4 13.4L18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                </svg>
-              </div>
-              <h3>Research before creative</h3>
-              <p>We start with days of real customer research before we make anything. Most editors and agencies skip straight to the creative.</p>
+              <p>A small base that only covers the production cost of the ads we create. Our real pay is a cut of the revenue our creative generates — it grows when your revenue grows, not a flat cheque we collect whether the ads work or not. We took the model every agency avoids, because we'd rather bet on our own work.</p>
             </div>
             <div class="glass-card glass-card--ecom glass-card--bleed-blue bento-cell">
               <div class="card-grid-texture"></div>
@@ -271,22 +271,12 @@
                 </svg>
               </div>
               <h3>Three brothers. No middlemen.</h3>
-              <p>No freelancer network, no account managers. You deal directly with the three of us, every time.</p>
-            </div>
-            <div class="glass-card glass-card--ecom glass-card--bleed-blue bento-cell cell--wide">
-              <div class="card-grid-texture"></div>
-              <div class="icon-badge">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M3 17V9l7-5 7 5v8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
-                  <path d="M8 17v-5h4v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                </svg>
-              </div>
-              <h3>Built inside an 8-figure brand</h3>
-              <p>We spent 2+ years working inside an 8-figure ecommerce brand, so we know what actually scales.</p>
+              <p>No bloated freelance network, no account manager relaying messages. Three brothers who share the same blood, the same room, and the same purpose. Every idea and every brief gets debated under one roof before you ever see it — and the ad you approve is the ad that goes live.</p>
             </div>
           </div>
         </section>
 
+        <!-- PROCESS SECTION (Kept intact per instructions: everything not mentioned remains) -->
         <section class="section" id="process">
           <div class="section__head">
             <p class="eyebrow">The process</p>
@@ -339,7 +329,8 @@
           </div>
         </section>
 
-        <section class="section" id="results">
+        <!-- SOFT DELETED RESULTS SECTION (Code untouched, hidden from DOM rendering) -->
+        <section class="section" id="results" hidden style="display: none !important;" aria-hidden="true">
           <div class="section__head">
             <p class="eyebrow">Results</p>
             <h2>The numbers, once they&rsquo;re in.</h2>
@@ -365,6 +356,7 @@
           </div>
         </section>
 
+        <!-- TESTIMONIALS (Kept intact per instructions) -->
         <section class="section" id="testimonials">
           <div class="section__head">
             <p class="eyebrow">What clients say</p>
@@ -378,209 +370,141 @@
           </div>
         </section>
 
-        <section class="section" id="offer">
-          <div class="section__head">
-            <p class="eyebrow">What&rsquo;s included</p>
-            <h2>Everything that goes into your pipeline.</h2>
-          </div>
-          <div class="offer-layout">
-            <ul class="checklist glass-card glass-card--bleed-cyan pad">
-              <li>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <circle cx="9" cy="9" r="9" fill="currentColor" opacity=".15" />
-                  <path d="M5 9.3l2.4 2.4L13 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>Deep customer and competitor research before a single ad gets made
-              </li>
-              <li>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <circle cx="9" cy="9" r="9" fill="currentColor" opacity=".15" />
-                  <path d="M5 9.3l2.4 2.4L13 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>Scroll-stopping ad scripts, written and edited by us — never freelancers
-              </li>
-              <li>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <circle cx="9" cy="9" r="9" fill="currentColor" opacity=".15" />
-                  <path d="M5 9.3l2.4 2.4L13 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>A creative pipeline that never runs dry — angles ready before the old ones fatigue
-              </li>
-              <li>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <circle cx="9" cy="9" r="9" fill="currentColor" opacity=".15" />
-                  <path d="M5 9.3l2.4 2.4L13 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>Direct access to the three of us, every call, every time
-              </li>
-              <li>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <circle cx="9" cy="9" r="9" fill="currentColor" opacity=".15" />
-                  <path d="M5 9.3l2.4 2.4L13 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>Data reviewed and creative improved after every launch
-              </li>
-            </ul>
+        <!-- WHAT'S INCLUDED SECTION (#offer) HARD REMOVED PER INSTRUCTIONS -->
 
-            <div class="glass-card glass-card--bleed-blue pad offer-model">
-              <h3>How we&rsquo;re paid</h3>
-              <p>A small base fee covers our production costs — research, scripting, editing. On top of that, a performance commission that grows as the brand&rsquo;s creative scales in spend and revenue. We&rsquo;re not a retainer factory collecting the same cheque whether the ads work or not — our upside is tied to the brand scaling.</p>
-              <a href="#book" class="btn btn--primary" data-booking-link>Book a call</a>
-            </div>
-          </div>
-        </section>
-
+        <!-- SECTION 7: MEET THE FOUNDER -->
         <section class="section" id="team">
           <div class="section__head">
-            <p class="eyebrow">The team</p>
-            <h2>Three brothers. One pipeline.</h2>
+            <p class="eyebrow">Meet the founder</p>
+            <h2>Why this company exists.</h2>
           </div>
           <div class="glass-card glass-card--bleed-cyan pad team-card">
             <span class="asset-slot asset-slot--photo" data-label="Founder photo">
-              <img src="assets/team/founder-photo.jpg" alt="The Seamless Social founders" onerror="handleAssetError(this)" loading="lazy" decoding="async" />
+              <img src="assets/team/founder-photo.jpg" alt="Saqib — Founder of Seamless Social" onerror="handleAssetError(this)" loading="lazy" decoding="async" />
             </span>
             <div class="team-card__copy">
-              <p>&ldquo;Hey — we&rsquo;re the three brothers behind Seamless Social. Before this, we spent two-plus years inside an 8-figure ecommerce brand, running the exact playbook we now run for our clients. No account managers, no freelancer network — when you work with us, you work directly with the three of us, every time.&rdquo;</p>
-              <span class="team-card__sign">— The Seamless Social team</span>
+              <p>&ldquo;Hey, I'm Saqib — founder of Seamless Social.</p>
+              <p>I started in 2023 as a freelance video editor working with 7 and 8 figure ecom brands. A year in, I realized the edit was never the thing making ads win. The thinking before it was. So I started learning creative strategy from inside the brands I worked with — watching what goes into ads that generate millions — and I never looked back. Since then I've been a full-time creative strategist, scaling ads to six figures in revenue.</p>
+              <p>But here's what I kept seeing everywhere I worked: the strategist in one country, the editor in another, the founder stuck in the middle translating between them. Everyone talented. Nobody aligned. And the ads paid the price.</p>
+              <p>That's why I started this company with my two brothers.</p>
+              <p>Think about it — three people, same roof, same time, learning at the same speed, aligned on every single concept before it ships. No agency can build that. You can't hire alignment like that. We were born with it.</p>
+              <p>And we put our money where our mouth is. Our pay comes out of the revenue we generate for you. Your brand becomes our brand — because if it doesn't grow, we don't eat.&rdquo;</p>
+              <span class="team-card__sign">— Saqib &amp; The Seamless Social team</span>
             </div>
           </div>
         </section>
 
+        <!-- SECTION 8: FAQ -->
         <section class="section" id="faq">
           <div class="section__head">
             <p class="eyebrow">FAQ</p>
-            <h2>Questions founders ask before they call.</h2>
+            <h2>The questions skeptical founders ask.</h2>
           </div>
           <div class="accordion">
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
-                <span>How are you different from other agencies or editors?</span>
+                <span>How are you different from the agency I just fired?</span>
                 <span class="accordion__icon" aria-hidden="true"></span>
               </button>
               <div class="accordion__panel">
                 <div>
-                  <p>We start with real customer research before any creative gets made — most editors and agencies skip straight to that part. And our pay is tied to how far your brand scales, not a flat retainer we collect no matter what happens.</p>
+                  <p>Two ways. First, the model — agencies collect the same retainer whether your ads work or not. Almost all of our pay comes from the revenue we generate for you, so we feel your account the way you do. Second, the structure — no freelancer network, no account manager relaying messages. Three brothers, one roof, and every concept debated in the same room before you ever see it.</p>
                 </div>
               </div>
             </div>
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
-                <span>Will it work for my product?</span>
+                <span>What exactly does the commission come from?</span>
                 <span class="accordion__icon" aria-hidden="true"></span>
               </button>
               <div class="accordion__panel">
                 <div>
-                  <p>We work with ecommerce brands doing roughly $500k&ndash;$5M a year that spend on Meta every day. The research-first process adapts to any product because we start with your actual customers, not a template.</p>
+                  <p>The revenue our ads generate. Nothing else. The small base only covers production costs — it's not where we make our money. If our creative doesn't drive revenue, we made ourselves cheap labor. That's the risk we take, on purpose.</p>
                 </div>
               </div>
             </div>
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
-                <span>I&rsquo;ve been burned by an agency before.</span>
+                <span>Can you show me results from past brands?</span>
                 <span class="accordion__icon" aria-hidden="true"></span>
               </button>
               <div class="accordion__panel">
                 <div>
-                  <p>That&rsquo;s exactly why we don&rsquo;t run on a flat retainer. A small base fee covers production, and the rest of our pay grows as your creative scales in spend and revenue — so our incentives sit next to yours, not separate from them.</p>
+                  <p>Some numbers, yes — I've scaled ads to six figures in revenue working with 7 and 8 figure brands. Screenshots and brand names, no. We're under NDAs and we take them seriously — which should tell you how we'd treat your data too. On the call I'll walk you through how we think instead, and you can judge for yourself whether we know what we're doing.</p>
                 </div>
               </div>
             </div>
             <div class="accordion__item">
               <button class="accordion__trigger" aria-expanded="false" type="button">
-                <span>Why not just hire in-house?</span>
+                <span>How many ads do I actually get?</span>
                 <span class="accordion__icon" aria-hidden="true"></span>
               </button>
               <div class="accordion__panel">
                 <div>
-                  <p>An in-house hire takes months to find, gives you one point of view, and no track record of scaling a brand from the inside. You get three operators, a research-first process, and direct access from day one.</p>
+                  <p>3-4 ads per week, every week. Each one built from research, not pulled from a template we used on fifty other brands. And because we earn from your revenue, we have zero incentive to pad the count with filler — every ad has to have a real shot at scaling.</p>
+                </div>
+              </div>
+            </div>
+            <div class="accordion__item">
+              <button class="accordion__trigger" aria-expanded="false" type="button">
+                <span>Do you run the ads too, or just make them?</span>
+                <span class="accordion__icon" aria-hidden="true"></span>
+              </button>
+              <div class="accordion__panel">
+                <div>
+                  <p>We make the creative and read the performance — hook rate, hold rate, CTR, revenue — so every next batch is smarter than the last. Your media buyer keeps running the account. If you don't have one, bring it up on the call and we'll figure out what makes sense.</p>
+                </div>
+              </div>
+            </div>
+            <div class="accordion__item">
+              <button class="accordion__trigger" aria-expanded="false" type="button">
+                <span>What if the ads don't perform?</span>
+                <span class="accordion__icon" aria-hidden="true"></span>
+              </button>
+              <div class="accordion__panel">
+                <div>
+                  <p>Then we barely get paid — that's the whole point of the model. But we don't leave it there. We read the data, find what missed, and the next batch is already in production. You're never sitting on a dead account waiting for a monthly deliverable.</p>
+                </div>
+              </div>
+            </div>
+            <div class="accordion__item">
+              <button class="accordion__trigger" aria-expanded="false" type="button">
+                <span>Am I locked into a contract?</span>
+                <span class="accordion__icon" aria-hidden="true"></span>
+              </button>
+              <div class="accordion__panel">
+                <div>
+                  <p>No lock-in games. If we're not making you money, keeping you trapped would only embarrass us. The partnership continues because it's working — that's the only reason we'd want it to.</p>
+                </div>
+              </div>
+            </div>
+            <div class="accordion__item">
+              <button class="accordion__trigger" aria-expanded="false" type="button">
+                <span>Who is this NOT for?</span>
+                <span class="accordion__icon" aria-hidden="true"></span>
+              </button>
+              <div class="accordion__panel">
+                <div>
+                  <p>Brands that aren't spending on Meta daily, or founders looking for cheap volume editing. If you want fifty random ads a month to spray at the wall, we're the wrong call. If you want fewer, sharper ads built with intent — book it.</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
+        <!-- SECTION 9: FINAL CALL-TO-ACTION (NO QUIZ - REPLACED WITH CALENDLY POPUP BUTTON) -->
         <section class="section section--final" id="book">
           <div class="section__head">
             <p class="eyebrow">Get started</p>
-            <h2>See if we&rsquo;re a fit.</h2>
-            <p class="section__sub">Answer four quick questions. If it&rsquo;s a match, you&rsquo;ll get straight through to our calendar.</p>
+            <h2>Your winners are fatiguing while you read this.</h2>
+            <p class="section__sub">If you're spending on Meta every day and you're done being the only person who cares whether your ads perform — book the call. We'll come having looked at your brand, and we'll tell you exactly what we'd build first. If we're not the right fit, we'll tell you that too.</p>
           </div>
 
-          <div class="form-card glass-card pad">
-            <div class="form-progress" id="formProgress" aria-hidden="true">
-              <span class="form-progress__dot is-active"></span>
-              <span class="form-progress__dot"></span>
-              <span class="form-progress__dot"></span>
-              <span class="form-progress__dot"></span>
-              <span class="form-progress__dot"></span>
-            </div>
-
-            <form id="qualifyForm" novalidate>
-              <fieldset class="form-step is-active" data-step="0" data-question="revenue">
-                <legend>What&rsquo;s your monthly revenue?</legend>
-                <div class="option-grid">
-                  <button type="button" class="option-btn" data-value="under40">Under $40k</button>
-                  <button type="button" class="option-btn" data-value="40to170">$40k&ndash;$170k</button>
-                  <button type="button" class="option-btn" data-value="170to420">$170k&ndash;$420k</button>
-                  <button type="button" class="option-btn" data-value="420plus">$420k+</button>
-                </div>
-              </fieldset>
-
-              <fieldset class="form-step" data-step="1" data-question="spend">
-                <legend>What&rsquo;s your Meta spend per day?</legend>
-                <div class="option-grid">
-                  <button type="button" class="option-btn" data-value="under500">Under $500</button>
-                  <button type="button" class="option-btn" data-value="500to1k">$500&ndash;$1k</button>
-                  <button type="button" class="option-btn" data-value="1kto5k">$1k&ndash;$5k</button>
-                  <button type="button" class="option-btn" data-value="5kplus">$5k+</button>
-                </div>
-              </fieldset>
-
-              <fieldset class="form-step" data-step="2" data-question="breaking">
-                <legend>What&rsquo;s breaking right now?</legend>
-                <div class="option-grid option-grid--wide">
-                  <button type="button" class="option-btn" data-value="no-strategist">No one on the team as creative strategist</button>
-                  <button type="button" class="option-btn" data-value="no-results">Ads aren&rsquo;t getting results</button>
-                  <button type="button" class="option-btn" data-value="no-system">No system for finding new angles</button>
-                  <button type="button" class="option-btn" data-value="scared-to-scale">Scared to scale spend</button>
-                </div>
-              </fieldset>
-
-              <fieldset class="form-step" data-step="3" data-question="timeline">
-                <legend>When do you want creative live?</legend>
-                <div class="option-grid">
-                  <button type="button" class="option-btn" data-value="thisweek">This week</button>
-                  <button type="button" class="option-btn" data-value="thismonth">This month</button>
-                  <button type="button" class="option-btn" data-value="nextquarter">Next quarter</button>
-                  <button type="button" class="option-btn" data-value="exploring">Just exploring</button>
-                </div>
-              </fieldset>
-
-              <fieldset class="form-step" data-step="4" data-question="contact">
-                <legend>Last thing — how do we reach you?</legend>
-                <div class="field-group">
-                  <label for="fieldName">Name</label>
-                  <input type="text" id="fieldName" name="name" autocomplete="name" required />
-                </div>
-                <div class="field-group">
-                  <label for="fieldContact">Email or X handle</label>
-                  <input type="text" id="fieldContact" name="contact" autocomplete="email" required />
-                </div>
-                <button type="submit" class="btn btn--primary btn--large form-submit">See if we&rsquo;re a fit</button>
-              </fieldset>
-
-              <div class="form-nav">
-                <button type="button" class="form-back" id="formBack" hidden>&larr; Back</button>
-              </div>
-            </form>
-
-            <div class="form-result" id="formResult" hidden>
-              <div class="form-result__qualified" id="resultQualified" hidden>
-                <h3>Looks like a good fit.</h3>
-                <p>Grab a time that works for you and we&rsquo;ll take it from there.</p>
-                <div id="calendly-inline-widget" style="min-width: 320px; height: 700px; margin-top: 1.5rem"></div>
-              </div>
-              <div class="form-result__teardown" id="resultTeardown" hidden>
-                <h3>Let&rsquo;s start smaller.</h3>
-                <p>Based on your answers, a call isn&rsquo;t the right next step yet — but a free teardown of your current ads is. We&rsquo;ll show you exactly where the creative is leaking.</p>
-                <a href="#" class="btn btn--primary btn--large" data-teardown-link target="_blank" rel="noopener">Get a free teardown</a>
-              </div>
-            </div>
+          <div class="form-card glass-card pad" style="text-align: center; max-width: 540px; padding: 3.5rem 2rem;">
+            <div class="card-grid-texture"></div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Ready to build ads that scale?</h3>
+            <p style="color: var(--text-muted); margin-bottom: 2.2rem;">Pick a time directly on our calendar. Speak straight to the operators behind the creative.</p>
+            <button type="button" class="btn btn--primary btn--large" onclick="openCalendlyPopup(); return false;" style="width: 100%;">Book a call now &rarr;</button>
           </div>
         </section>
       </main>
@@ -597,12 +521,14 @@
           </a>
           <nav class="footer__links" aria-label="Footer">
             <a href="#what-we-do">What we do</a>
+            <a href="#sounds-familiar">Sounds familiar</a>
             <a href="#model">The model</a>
             <a href="#process">Process</a>
-            <a href="#results">Results</a>
+            <!-- Soft deleted Results footer link -->
+            <a href="#results" style="display: none !important;" aria-hidden="true">Results</a>
             <a href="#faq">FAQ</a>
           </nav>
-          <a href="#book" class="btn btn--primary btn--small" data-booking-link>Book a call</a>
+          <button type="button" class="btn btn--primary btn--small" onclick="openCalendlyPopup(); return false;">Book a call</button>
         </div>
         <div class="footer__bottom">
           <p>Performance ad creative for ecommerce brands on Meta.</p>
