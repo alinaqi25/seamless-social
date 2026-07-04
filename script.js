@@ -372,16 +372,94 @@ function renderVoiceSlider(voiceNotes) {
             </svg>
           </div>
           <div>
-            <h4 style="margin:0; font-size:1rem;">Voice Note Testimonial</h4>
+            <h4 style="margin:0; font-size:1rem; font-weight:600; color:var(--white);">Voice Note Testimonial</h4>
             <span class="testimonial-card__author" style="margin:0; font-size:0.85rem; color: var(--text-muted);">Partner Brand Memo</span>
           </div>
         </div>
-        <div class="voice-card__player" style="margin-top: 1.5rem;">
-          <audio src="${audioUrl}" controls style="width: 100%; border-radius: var(--radius-pill); background: rgba(0, 0, 0, 0.2);"></audio>
+        <div class="voice-card__player">
+          <div class="cyber-audio-player">
+            <audio src="${audioUrl}" preload="metadata"></audio>
+            <div class="cyber-audio-controls-row">
+              <button class="cyber-audio-play" aria-label="Play audio">
+                <svg class="play-svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg>
+              </button>
+              <span class="cyber-audio-time">0:00 / --:--</span>
+            </div>
+            <div class="cyber-audio-progress-wrap">
+              <input type="range" class="cyber-audio-progress" min="0" max="100" value="0">
+            </div>
+          </div>
         </div>
       </div>`;
     })
     .join("");
+
+  track.querySelectorAll('.cyber-audio-player').forEach(player => {
+    const audio = player.querySelector('audio');
+    const playBtn = player.querySelector('.cyber-audio-play');
+    const timeLabel = player.querySelector('.cyber-audio-time');
+    const progressBar = player.querySelector('.cyber-audio-progress');
+    
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function updateFill(percentage) {
+      progressBar.style.setProperty('--seek-percent', `${percentage}%`);
+    }
+    
+    audio.addEventListener('loadedmetadata', () => {
+      timeLabel.textContent = `0:00 / ${formatTime(audio.duration)}`;
+    });
+    
+    playBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('audio').forEach(otherAudio => {
+        if (otherAudio !== audio) {
+          otherAudio.pause();
+          const otherPlayer = otherAudio.closest('.cyber-audio-player');
+          if (otherPlayer) {
+            otherPlayer.querySelector('.cyber-audio-play').innerHTML = '<svg class="play-svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg>';
+          }
+        }
+      });
+
+      if (audio.paused) {
+        audio.play();
+        playBtn.innerHTML = '<svg class="pause-svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+      } else {
+        audio.pause();
+        playBtn.innerHTML = '<svg class="play-svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg>';
+      }
+    });
+    
+    audio.addEventListener('timeupdate', () => {
+      if (!audio.duration) return;
+      const percentage = (audio.currentTime / audio.duration) * 100;
+      progressBar.value = percentage;
+      updateFill(percentage);
+      timeLabel.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+    });
+
+    audio.addEventListener('ended', () => {
+      playBtn.innerHTML = '<svg class="play-svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg>';
+      progressBar.value = 0;
+      updateFill(0);
+      timeLabel.textContent = `0:00 / ${formatTime(audio.duration)}`;
+    });
+    
+    progressBar.addEventListener('input', () => {
+      if (!audio.duration) return;
+      audio.currentTime = (progressBar.value / 100) * audio.duration;
+      updateFill(progressBar.value);
+    });
+
+    progressBar.addEventListener('mousedown', (e) => e.stopPropagation());
+    progressBar.addEventListener('touchstart', (e) => e.stopPropagation());
+  });
 
   if (shouldActivateSlider) {
     setupSliderDragging(wrapper, track);
@@ -472,6 +550,7 @@ function setupSliderDragging(wrapper, track) {
   visibilityObserver.observe(wrapper);
 
   wrapper.addEventListener("mousedown", (e) => {
+    if (e.target.closest('.cyber-audio-player')) return;
     isDragging = true;
     wrapper.classList.add("is-dragging");
     startX = e.clientX;
@@ -504,6 +583,7 @@ function setupSliderDragging(wrapper, track) {
   wrapper.addEventListener(
     "touchstart",
     (e) => {
+      if (e.target.closest('.cyber-audio-player')) return;
       isDragging = true;
       startX = e.touches[0].clientX;
       dragStartTranslate = currentX;
