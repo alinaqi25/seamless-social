@@ -1087,6 +1087,7 @@ main {
   flex-direction: column;
   gap: 1rem;
   contain: content;
+  padding-top: 5px;
 }
 
 .accordion__item {
