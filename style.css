@@ -11,7 +11,7 @@
   --bleed-cyan: #4de8ff;
   --bleed-blue: #4c7cff;
   --bleed-red: #ff6b6b;
-  --bleed-yellow: #d69f1e;
+  --bleed-yellow: #ffca00;
   --bleed-green: #4ade80;
 
   --text-primary: #f5f7ff;
@@ -880,6 +880,7 @@ main {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  padding-bottom: 0.15em;
 }
 .hero__sub {
   font-size: clamp(1.05rem, 1.6vw, 1.2rem);
@@ -1413,16 +1414,56 @@ main {
   padding: 20px 0 64px;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: pan-y;
 }
 .slider-wrapper.is-dragging {
   cursor: grabbing;
 }
 .slider-track {
   display: flex;
+  align-items: center;
   gap: 24px;
   width: max-content;
   will-change: transform;
   transform: translate3d(0, 0, 0);
+  transition: transform var(--dur-med) var(--ease);
+}
+.slider-wrapper.is-dragging .slider-track {
+  transition: none;
+}
+
+.slider-track > * {
+  transition:
+    transform var(--dur-fast) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+  transform: scale(0.86);
+  opacity: 0.45;
+  transform-origin: center center;
+  cursor: pointer;
+  backface-visibility: hidden;
+}
+.slider-track > .is-active {
+  transform: scale(1.06);
+  opacity: 1;
+  z-index: 2;
+  cursor: default;
+}
+
+html.gpu-lite .slider-track {
+  transition: transform var(--dur-fast) ease-out;
+}
+html.gpu-lite .slider-track > * {
+  transition: opacity var(--dur-fast) ease-out;
+  transform: scale(0.94);
+}
+html.gpu-lite .slider-track > .is-active {
+  transform: scale(1.02);
+}
+
+.slider-wrapper.slider-disabled .slider-track > * {
+  transform: none !important;
+  opacity: 1 !important;
+  cursor: default;
 }
 .video-card {
   flex: 0 0 540px;
@@ -1446,10 +1487,25 @@ main {
   flex: 0 0 420px;
   max-width: 85vw;
 }
+.text-card {
+  display: flex;
+  flex-direction: column;
+}
 .text-card__stars {
   color: var(--bleed-yellow);
   margin-bottom: 0.8rem;
   font-size: 1.4rem;
+  flex: 0 0 auto;
+}
+.testimonial-card__quote {
+  flex: 0 0 auto;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+  margin: 0;
+  line-height: 1.55;
+  height: calc(1.55em * 6);
 }
 .text-card__header,
 .voice-card__header {
@@ -1458,8 +1514,20 @@ main {
   gap: 16px;
   margin-top: 1.5rem;
 }
+.text-card__header {
+  flex: 0 0 auto;
+}
 .voice-card__header {
   margin-top: 0;
+}
+.text-card.is-active {
+  cursor: pointer;
+}
+.text-card.is-expanded .testimonial-card__quote {
+  -webkit-line-clamp: unset;
+  display: block;
+  height: auto;
+  overflow: visible;
 }
 .text-card__logo {
   width: 44px;
@@ -1470,7 +1538,6 @@ main {
   pointer-events: none;
 }
 
-/* Premium Voice Testimonial Modular Component Styles */
 .cyber-audio-player {
   display: flex;
   flex-direction: column;
@@ -1528,7 +1595,6 @@ main {
   outline: none;
 }
 
-/* Webkit Rendering Core */
 .cyber-audio-progress::-webkit-slider-runnable-track {
   width: 100%;
   height: 6px;
@@ -1550,7 +1616,6 @@ main {
   filter: brightness(1.2);
 }
 
-/* Gecko Rendering Core */
 .cyber-audio-progress::-moz-range-track {
   width: 100%;
   height: 6px;
@@ -1737,6 +1802,10 @@ html.gpu-lite .center-glow {
   .text-card,
   .voice-card {
     flex: 0 0 290px;
+  }
+  .testimonial-card__quote {
+    -webkit-line-clamp: 5;
+    height: calc(1.55em * 5);
   }
 
   .logos__track {

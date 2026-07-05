@@ -286,7 +286,7 @@ function renderVideoSlider(videos) {
     .join("");
 
   if (shouldActivateSlider) {
-    setupSliderDragging(wrapper, track);
+    initFocusCarousel(wrapper, track, videos.length);
   }
 }
 
@@ -331,7 +331,7 @@ function renderTextSlider(testimonials) {
     .join("");
 
   if (shouldActivateSlider) {
-    setupSliderDragging(wrapper, track);
+    initFocusCarousel(wrapper, track, testimonials.length);
   }
 }
 
@@ -462,7 +462,7 @@ function renderVoiceSlider(voiceNotes) {
   });
 
   if (shouldActivateSlider) {
-    setupSliderDragging(wrapper, track);
+    initFocusCarousel(wrapper, track, voiceNotes.length);
   }
 }
 
@@ -486,136 +486,176 @@ function renderLogoMarquee(logoStrips) {
   track.innerHTML += track.innerHTML;
 }
 
-function setupSliderDragging(wrapper, track) {
-  if (!wrapper || !track) return;
-  let currentX = 0,
-    isDragging = false,
-    isHovered = false,
-    startX = 0,
-    dragStartTranslate = 0;
-  const autoScrollSpeed = 0.4;
-  let isSliderVisible = false;
-  let animationFrameId = null;
+function initFocusCarousel(wrapper, track, setSize, options = {}) {
+  if (!wrapper || !track || !setSize || setSize < 1) return;
 
-  function getSetWidth() {
-    return track.scrollWidth / 3;
+  const interval = options.interval || 3800;
+  let activeIndex = setSize;
+  let timer = null;
+  let isPaused = false;
+  let isPointerDown = false;
+  let didDrag = false;
+  let startX = 0;
+  let dragDx = 0;
+
+  const getCards = () => Array.from(track.children);
+
+  function cardFromEvent(e) {
+    let el = e.target;
+    while (el && el !== track && el.parentElement !== track) {
+      el = el.parentElement;
+    }
+    return el && el.parentElement === track ? el : null;
   }
 
-  function initPosition() {
-    const setWidth = getSetWidth();
-    if (setWidth > 0) {
-      currentX = -setWidth;
-      track.style.transform = `translate3d(${currentX}px, 0, 0)`;
+  function paint(instant) {
+    const cards = getCards();
+    if (!cards.length) return;
+
+    if (instant) track.style.transition = "none";
+
+    cards.forEach((el, i) => {
+      const isActive = i === activeIndex;
+      el.classList.toggle("is-active", isActive);
+      if (!isActive) el.classList.remove("is-expanded");
+    });
+
+    const active = cards[activeIndex];
+    if (active) {
+      const target = wrapper.clientWidth / 2 - (active.offsetLeft + active.offsetWidth / 2);
+      track.style.transform = `translate3d(${Math.round(target)}px, 0, 0)`;
+    }
+
+    if (instant) {
+      track.offsetHeight;
+      track.style.transition = "";
     }
   }
 
-  initPosition();
-  setTimeout(initPosition, 100);
-  setTimeout(initPosition, 400);
+  function restartTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => {
+      if (!isPaused && !isPointerDown) goTo(activeIndex + 1);
+    }, interval);
+  }
 
-  function update() {
-    if (!isSliderVisible || window.isScrolling) {
-      if (!isDragging) {
-        animationFrameId = requestAnimationFrame(update);
+function goTo(index) {
+    if (activeIndex >= setSize * 2) {
+      const diff = index - activeIndex;
+      activeIndex -= setSize;
+      paint(true);
+      index = activeIndex + diff;
+    } else if (activeIndex < setSize) {
+      const diff = index - activeIndex;
+      activeIndex += setSize;
+      paint(true);
+      index = activeIndex + diff;
+    }
+
+    activeIndex = index;
+    paint(false);
+    restartTimer();
+  }
+
+  track.addEventListener("transitionend", (e) => {
+    if (e.target !== track || e.propertyName !== "transform") return;
+    if (activeIndex >= setSize * 2) {
+      activeIndex -= setSize;
+      paint(true);
+    } else if (activeIndex < setSize) {
+      activeIndex += setSize;
+      paint(true);
+    }
+  });
+
+  wrapper.addEventListener("pointerdown", (e) => {
+    if (e.target.closest(".cyber-audio-player")) return;
+    isPointerDown = true;
+    didDrag = false;
+    startX = e.clientX;
+    dragDx = 0;
+    wrapper.classList.add("is-dragging");
+  });
+
+  window.addEventListener("pointermove", (e) => {
+    if (!isPointerDown) return;
+    dragDx = e.clientX - startX;
+    if (Math.abs(dragDx) > 6) didDrag = true;
+  });
+
+  window.addEventListener("pointerup", () => {
+    if (!isPointerDown) return;
+    isPointerDown = false;
+    wrapper.classList.remove("is-dragging");
+    const threshold = 40;
+    if (dragDx <= -threshold) goTo(activeIndex + 1);
+    else if (dragDx >= threshold) goTo(activeIndex - 1);
+    setTimeout(() => (didDrag = false), 60);
+  });
+
+  wrapper.addEventListener(
+    "click",
+    (e) => {
+      if (didDrag) {
+        e.preventDefault();
+        e.stopPropagation();
         return;
       }
-    }
+      const card = cardFromEvent(e);
+      if (!card) return;
+      const idx = getCards().indexOf(card);
+      if (idx === -1) return;
 
-    const setWidth = getSetWidth();
-
-    if (!isDragging && !isHovered && isSliderVisible && !window.isScrolling && setWidth > 0) {
-      currentX -= autoScrollSpeed;
-      if (currentX <= -2 * setWidth) {
-        currentX += setWidth;
+      if (idx !== activeIndex) {
+        e.preventDefault();
+        e.stopPropagation();
+        goTo(idx);
+        return;
       }
-    }
 
-    animationFrameId = requestAnimationFrame(update);
-    if (setWidth > 0 && !isDragging) {
-      track.style.transform = `translate3d(${currentX}px, 0, 0)`;
-    }
-  }
+      const quote = card.querySelector(".testimonial-card__quote");
+      if (!quote) return;
+
+      const isExpanded = card.classList.contains("is-expanded");
+      if (!isExpanded && quote.scrollHeight - quote.clientHeight <= 2) {
+        return; 
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+      card.classList.toggle("is-expanded", !isExpanded);
+      isPaused = !isExpanded; 
+      restartTimer();
+    },
+    { capture: true }
+  );
+
+  wrapper.addEventListener("mouseenter", () => (isPaused = true));
+  wrapper.addEventListener("mouseleave", () => (isPaused = false));
 
   const visibilityObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        isSliderVisible = entry.isIntersecting;
-        if (isSliderVisible && !animationFrameId) {
-          animationFrameId = requestAnimationFrame(update);
+        if (entry.isIntersecting) {
+          restartTimer();
+        } else {
+          clearInterval(timer);
         }
       });
     },
-    { threshold: 0.01 }
+    { threshold: 0.15 }
   );
   visibilityObserver.observe(wrapper);
 
-  wrapper.addEventListener("mousedown", (e) => {
-    if (e.target.closest('.cyber-audio-player')) return;
-    isDragging = true;
-    wrapper.classList.add("is-dragging");
-    startX = e.clientX;
-    dragStartTranslate = currentX;
-    if (!animationFrameId) animationFrameId = requestAnimationFrame(update);
-  });
-
-  window.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    const deltaX = e.clientX - startX;
-    currentX = dragStartTranslate + deltaX;
-    const setWidth = getSetWidth();
-    if (setWidth > 0) {
-      if (currentX >= 0) {
-        currentX -= setWidth;
-        dragStartTranslate -= setWidth;
-      } else if (currentX <= -2 * setWidth) {
-        currentX += setWidth;
-        dragStartTranslate += setWidth;
-      }
-    }
-    track.style.transform = `translate3d(${currentX}px, 0, 0)`;
-  });
-
-  window.addEventListener("mouseup", () => {
-    isDragging = false;
-    wrapper.classList.remove("is-dragging");
-  });
-
-  wrapper.addEventListener(
-    "touchstart",
-    (e) => {
-      if (e.target.closest('.cyber-audio-player')) return;
-      isDragging = true;
-      startX = e.touches[0].clientX;
-      dragStartTranslate = currentX;
-      if (!animationFrameId) animationFrameId = requestAnimationFrame(update);
+  let resizeTimeout;
+  window.addEventListener(
+    "resize",
+    () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => paint(true), 150);
     },
     { passive: true }
   );
 
-  wrapper.addEventListener(
-    "touchmove",
-    (e) => {
-      if (!isDragging) return;
-      currentX = dragStartTranslate + (e.touches[0].clientX - startX);
-      const setWidth = getSetWidth();
-      if (setWidth > 0) {
-        if (currentX >= 0) {
-          currentX -= setWidth;
-          dragStartTranslate -= setWidth;
-        } else if (currentX <= -2 * setWidth) {
-          currentX += setWidth;
-          dragStartTranslate += setWidth;
-        }
-      }
-      track.style.transform = `translate3d(${currentX}px, 0, 0)`;
-    },
-    { passive: true }
-  );
-
-  wrapper.addEventListener("touchend", () => (isDragging = false));
-  wrapper.addEventListener("mouseenter", () => (isHovered = true));
-  wrapper.addEventListener("mouseleave", () => {
-    isHovered = false;
-    isDragging = false;
-  });
+  paint(true);
 }
